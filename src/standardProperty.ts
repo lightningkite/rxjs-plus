@@ -1,8 +1,9 @@
 import {Subject} from "rxjs";
 import {MutableProperty} from "./Property";
 
-export class StandardProperty<T> implements MutableProperty<T> {
+export class StandardProperty<T> extends MutableProperty<T> {
     constructor(value: T) {
+        super()
         this._value = value
     }
 

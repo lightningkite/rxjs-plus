@@ -1,7 +1,7 @@
 import {Subject} from "rxjs";
 import {MutableProperty, Property} from "./Property";
 
-export class StackProperty<T> implements Property<Array<T>> {
+export class StackProperty<T> extends Property<Array<T>> {
     value: Array<T> = []
 
     readonly onChange = new Subject<Array<T>>()

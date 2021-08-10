@@ -1,4 +1,4 @@
-import {bindMutable, StandardProperty, ViewGenerator, inflateHtml, pipe, map} from 'rxjs-property'
+import {bindMutable, StandardProperty, ViewGenerator, inflateHtml, map} from 'rxjs-property'
 import html from './SelectVG.html'
 import {bind, bindChildren, ConstantProperty, StackProperty} from "../../src";
 import {BindTestVG} from "./BindTestVG";
@@ -17,7 +17,7 @@ export class SelectVG implements ViewGenerator {
 
         bindChildren(list, this.demos, obs => {
             const button = document.createElement("button")
-            bind(button, "innerHTML", pipe(obs, map(x => x[0])))
+            bind(button, "innerHTML", obs.pipe(map(x => x[0])))
             button.addEventListener("click", ev => {
                 this.stack.push(obs.value[1]())
             })

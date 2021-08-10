@@ -1,4 +1,4 @@
-import {bind, bindMutable, StandardProperty, ViewGenerator, inflateHtml, pipe, map} from 'rxjs-property'
+import {bind, bindMutable, StandardProperty, ViewGenerator, inflateHtml, map} from 'rxjs-property'
 import html from './BindTestVG.html'
 
 export class BindTestVG implements ViewGenerator {
@@ -10,8 +10,7 @@ export class BindTestVG implements ViewGenerator {
         const testOutput = view.getElementsByClassName("test-output")[0] as HTMLParagraphElement
         
         bindMutable(testInput, "value", "input", this.prop)
-        bind(testOutput, "innerHTML", pipe(
-            this.prop,
+        bind(testOutput, "innerHTML", this.prop.pipe(
             map(x => `You entered ${x}`),
         ))
 

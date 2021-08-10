@@ -1,6 +1,5 @@
 import {MutableProperty, Property} from "./Property";
 import {DisposeCondition} from "./dispose";
-import {subscribe} from "./subscribe";
 import {StandardProperty} from "./standardProperty";
 
 export const detatchEventSymbol = Symbol("detatchEvent")
@@ -58,14 +57,14 @@ export function elementRemoved(element: HTMLElement): DisposeCondition {
 }
 
 export function bind<OWNER extends HTMLElement, KEY extends keyof OWNER>(owner: OWNER, key: KEY, property: Property<OWNER[KEY]>) {
-    elementRemoved(owner)(subscribe(value => {
+    elementRemoved(owner)(property.subscribe(value => {
         // @ts-ignore
         owner[key] = value
-    })(property))
+    }))
 }
 
 export function bindAction<OWNER extends HTMLElement, VALUE>(owner: OWNER, property: Property<VALUE>, action: (value: VALUE) => void) {
-    elementRemoved(owner)(subscribe(action)(property))
+    elementRemoved(owner)(property.subscribe(action))
 }
 
 export function bindMutable<OWNER extends HTMLElement, KEY extends keyof OWNER, EVENT extends keyof HTMLElementEventMap>(
@@ -82,14 +81,14 @@ export function bindMutable<OWNER extends HTMLElement, KEY extends keyof OWNER, 
             suppress = false
         }
     })
-    elementRemoved(owner)(subscribe(value => {
+    elementRemoved(owner)(property.subscribe(value => {
         if (!suppress) {
             suppress = true
             // @ts-ignore
             owner[key] = value
             suppress = false
         }
-    })(property))
+    }))
 }
 
 export function bindChildren<T>(
@@ -98,7 +97,7 @@ export function bindChildren<T>(
     makeChild: (prop: Property<T>) => HTMLElement
 ) {
     const children: Array<[HTMLElement, StandardProperty<T>]> = []
-    elementRemoved(parent)(subscribe((value: Array<T>) => {
+    elementRemoved(parent)(list.subscribe((value: Array<T>) => {
         const min = Math.min(children.length, value.length)
         for (let i = 0; i < min; i++) {
             children[i][1].value = value[i]
@@ -115,5 +114,5 @@ export function bindChildren<T>(
             parent.appendChild(view)
             children.push([view, prop])
         }
-    })(list))
+    }))
 }
