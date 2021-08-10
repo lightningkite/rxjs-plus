@@ -1,6 +1,7 @@
 import {MutableProperty, Property} from "./Property";
 import {DisposeCondition} from "./dispose";
 import {subscribe} from "./subscribe";
+import {StandardProperty} from "./standardProperty";
 
 export const detatchEventSymbol = Symbol("detatchEvent")
 declare global {
@@ -91,3 +92,28 @@ export function bindMutable<OWNER extends HTMLElement, KEY extends keyof OWNER, 
     })(property))
 }
 
+export function bindChildren<T>(
+    parent: HTMLElement,
+    list: Property<Array<T>>,
+    makeChild: (prop: Property<T>) => HTMLElement
+) {
+    const children: Array<[HTMLElement, StandardProperty<T>]> = []
+    elementRemoved(parent)(subscribe((value: Array<T>) => {
+        const min = Math.min(children.length, value.length)
+        for (let i = 0; i < min; i++) {
+            children[i][1].value = value[i]
+        }
+        for (let i = value.length; i < children.length; i++) {
+            const old = children[i]
+            parent.removeChild(old[0])
+            triggerDetatchEvent(old[0])
+        }
+        children.splice(value.length, children.length - value.length)
+        for (let i = children.length; i < value.length; i++) {
+            const prop = new StandardProperty(value[i])
+            const view = makeChild(prop)
+            parent.appendChild(view)
+            children.push([view, prop])
+        }
+    })(list))
+}

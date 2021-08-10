@@ -1,6 +1,3 @@
-import {Subscribable, Subscription} from "rxjs";
-import {SubscriptionLike} from "rxjs/src/internal/types";
-
 export type DisposeCondition = (subscription: {unsubscribe: ()=>void}) => void
 
 export function disposeOr(...conditions: Array<DisposeCondition>): DisposeCondition {

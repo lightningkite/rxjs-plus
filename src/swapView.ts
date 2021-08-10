@@ -3,7 +3,13 @@ import {bindAction, triggerDetatchEvent} from "./dom";
 import {Property} from "./Property";
 
 export interface ViewGenerator {
-    generate(dependency: Window): HTMLElement
+    generate(): HTMLElement
+}
+
+export function inflateHtml(htmlString: string): HTMLElement {
+    const div = document.createElement('div');
+    div.innerHTML = htmlString.trim();
+    return div.firstChild as HTMLElement
 }
 
 export function swapViewStack(div: HTMLDivElement, obs: StackProperty<ViewGenerator>, animationNamePrefix: string) {
@@ -18,14 +24,14 @@ export function swapViewStack(div: HTMLDivElement, obs: StackProperty<ViewGenera
         }
         previousStackSize = newStackSize;
         const newVG = stack[stack.length - 1] ?? null;
-        const newView = newVG?.generate(window) ?? null;
+        const newView = newVG?.generate() ?? null;
         swapViewSwap(div, newView, animation)
     })
 }
 
 export function swapViewProperty(div: HTMLDivElement, obs: Property<ViewGenerator>, animationName: string) {
     bindAction(div, obs, newVG => {
-        const newView = newVG?.generate(window) ?? null;
+        const newView = newVG?.generate() ?? null;
         swapViewSwap(div, newView, animationName)
     })
 }
