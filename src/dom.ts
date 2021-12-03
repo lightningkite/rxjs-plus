@@ -33,21 +33,6 @@ export function triggerDetatchEvent(view: HTMLElement) {
     }
 }
 
-export function eventListener<OWNER extends HTMLElement,
-    K extends keyof HTMLElementEventMap>(
-    owner: OWNER,
-    event: K,
-    listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any,
-    options?: boolean | AddEventListenerOptions
-): void {
-    owner.addEventListener(event, listener, options)
-    elementRemoved(owner)({
-        unsubscribe() {
-            owner.removeEventListener(event, listener, options)
-        }
-    })
-}
-
 export function elementRemoved(element: HTMLElement): DisposeCondition {
     return (x) => {
         addDetatchEvent(element, () => {
@@ -74,7 +59,7 @@ export function bindMutable<OWNER extends HTMLElement, KEY extends keyof OWNER, 
     property: MutableProperty<OWNER[KEY]>
 ) {
     let suppress = false
-    eventListener(owner, event, () => {
+    owner.addEventListener(event, () => {
         if (!suppress) {
             suppress = true
             property.value = owner[key]

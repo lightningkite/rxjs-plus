@@ -1,7 +1,6 @@
-import {StackProperty, swapViewStack, ViewGenerator} from "rxjs-property";
+import {StackProperty, swapViewStack, ViewGenerator, bind, bindAction, inflateHtml} from "rxjs-property";
 import {SelectVG} from "./SelectVG";
 import html from './RootVG.html'
-import {bind, bindAction, inflateHtml} from "../../src";
 
 export class RootVG implements ViewGenerator {
     stack = new StackProperty<ViewGenerator>()
