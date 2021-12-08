@@ -276,7 +276,12 @@ export class DisposableLambda implements SubscriptionLike {
         this.closed = true;
         this.lambda();
     }
+}
 
+function modify<T>(modifier: (item: T)=>T): UnaryFunction<HasValueSubject<T>, void> {
+    return sub => {
+        sub.next(modifier(sub.value))
+    }
 }
 
 function test() {

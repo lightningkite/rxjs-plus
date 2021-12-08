@@ -1,0 +1,48 @@
+- id: okhttp3.RequestBody
+  type: type
+  template:
+    pattern: HttpBody
+    imports:
+      HttpBody: butterfly-web/dist/net/HttpBody
+
+- id: com.lightningkite.butterfly.net.HttpResponse
+  type: type
+  template: Response
+
+- id: okhttp3.HttpResponse
+  type: type
+  template: Response
+
+- id: okhttp3.MediaType.parse
+  type: call
+  template: ~0~
+
+- id: java.net.SocketTimeoutException
+  type: type
+  template:
+    pattern: TimeoutError
+    imports:
+      TimeoutError: rxjs
+
+- id: com.lightningkite.butterfly.net.HttpCacheMode.Default
+  type: get
+  template: '"default"'
+- id: com.lightningkite.butterfly.net.HttpCacheMode.NoStore
+  type: get
+  template: '"no-store"'
+- id: com.lightningkite.butterfly.net.HttpCacheMode.Reload
+  type: get
+  template: '"reload"'
+- id: com.lightningkite.butterfly.net.HttpCacheMode.NoCache
+  type: get
+  template: '"no-cache"'
+- id: com.lightningkite.butterfly.net.HttpCacheMode.ForceCache
+  type: get
+  template: '"force-cache"'
+- id: com.lightningkite.butterfly.net.HttpCacheMode.OnlyIfCached
+  type: get
+  template: '"only-if-cached"'
+
+#- id: com.lightningkite.butterfly.net.HttpCacheMode.
+#  type: get
+#  template: 'from(fetch(~0~, { body: ~1~?.data, headers: ~2~ }))'
