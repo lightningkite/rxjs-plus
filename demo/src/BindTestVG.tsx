@@ -1,8 +1,9 @@
-import {bind, bindMutable, StandardProperty, ViewGenerator, inflateHtml, map, createElement} from 'rxjs-property'
+import {bind, subscribeAutoDispose, ViewGenerator} from 'rxjs-plus'
 import html from './BindTestVG.html'
+import {BehaviorSubject, map} from "rxjs";
 
 export class BindTestVG implements ViewGenerator {
-    prop = new StandardProperty("")
+    prop = new BehaviorSubject("")
 
     generate(): HTMLElement {
         return <div>

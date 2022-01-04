@@ -1,21 +1,26 @@
-import {StackProperty, swapViewStack, ViewGenerator, bind, bindAction, inflateHtml} from "rxjs-property";
+import {HasValueSubject, ViewGenerator, xStackPush, showInSwap, subscribeAutoDispose, xStackPop} from "rxjs-plus";
 import {SelectVG} from "./SelectVG";
 import html from './RootVG.html'
+import {BehaviorSubject, map} from "rxjs";
+import {inflateHtmlFile} from './html-helpers'
 
 export class RootVG implements ViewGenerator {
-    stack = new StackProperty<ViewGenerator>()
+    stack: HasValueSubject<Array<ViewGenerator>> = new BehaviorSubject<Array<ViewGenerator>>([])
 
     constructor() {
-        this.stack.push(new SelectVG(this.stack))
+        xStackPush(this.stack, new SelectVG(this.stack))
     }
 
     generate(): HTMLElement {
-        const view = inflateHtml(html)
-        const back = view.getElementsByClassName("id-back")[0] as HTMLButtonElement
-        const swap = view.getElementsByClassName("id-content")[0] as HTMLDivElement
-        bindAction(back, this.stack, stack => back.hidden = stack.length <= 1)
-        swapViewStack(swap, this.stack, "butterfly-animate")
-        back.addEventListener("click", ev => this.stack.pop())
-        return view
+        const view = inflateHtmlFile(html, "back", "content")
+        this.stack.pipe(
+            map(stack => stack.length <= 1),
+            subscribeAutoDispose(view.back, "hidden")
+        )
+        this.stack.pipe(
+            showInSwap(view.content as HTMLDivElement)
+        )
+        view.back.addEventListener("click", ev => xStackPop(this.stack))
+        return view._root
     }
 }

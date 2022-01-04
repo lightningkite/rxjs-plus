@@ -4,7 +4,7 @@ import {BehaviorSubject, bindCallback, MonoTypeOperatorFunction, Observable, Sub
 import {subscribeAutoDispose} from "./binding";
 
 export interface ViewGenerator {
-    readonly titleString: string
+    readonly titleString?: string
 
     generate(dependency: Window): HTMLElement
 }

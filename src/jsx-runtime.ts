@@ -1,8 +1,10 @@
-declare namespace JSX {
+import {Observable, Subject} from "rxjs";
+import {bind, subscribeAutoDispose, showIn} from "./binding";
+export namespace JSX {
 
     // import type { Property, MutableProperty } from "rxjs-property";
-    type Property<T> = import("./Property").Property<T>
-    type MutableProperty<T> = import("./Property").MutableProperty<T>
+    type Observable<T> = import("rxjs").Observable<T>
+    type Subject<T> = import("rxjs").Subject<T>
 
     type Defaultize<Props, Defaults> =
     // Distribute over unions
@@ -787,156 +789,156 @@ declare namespace JSX {
         itemRef?: string;
 
         // Standard HTML Attributes
-        'bind-accept'?: Property<string>;
-        'bind-acceptCharset'?: Property<string>;
-        'bind-accessKey'?: Property<string>;
-        'bind-action'?: Property<string>;
-        'bind-allowFullScreen'?: Property<boolean>;
-        'bind-allowTransparency'?: Property<boolean>;
-        'bind-alt'?: Property<string>;
-        'bind-as'?: Property<string>;
-        'bind-async'?: Property<boolean>;
-        'bind-autocomplete'?: Property<string>;
-        'bind-autoComplete'?: Property<string>;
-        'bind-autocorrect'?: Property<string>;
-        'bind-autoCorrect'?: Property<string>;
-        'bind-autofocus'?: Property<boolean>;
-        'bind-autoFocus'?: Property<boolean>;
-        'bind-autoPlay'?: Property<boolean>;
-        'bind-capture'?: Property<boolean | string>;
-        'bind-cellPadding'?: Property<number | string>;
-        'bind-cellSpacing'?: Property<number | string>;
-        'bind-charSet'?: Property<string>;
-        'bind-challenge'?: Property<string>;
-        'bind-checked'?: Property<boolean>;
-        'bind-class'?: Property<string>;
-        'bind-className'?: Property<string>;
-        'bind-cols'?: Property<number>;
-        'bind-colSpan'?: Property<number>;
-        'bind-content'?: Property<string>;
-        'bind-contentEditable'?: Property<boolean>;
-        'bind-contextMenu'?: Property<string>;
-        'bind-controls'?: Property<boolean>;
-        'bind-controlsList'?: Property<string>;
-        'bind-coords'?: Property<string>;
-        'bind-crossOrigin'?: Property<string>;
-        'bind-data'?: Property<string>;
-        'bind-dateTime'?: Property<string>;
-        'bind-default'?: Property<boolean>;
-        'bind-defer'?: Property<boolean>;
-        'bind-dir'?: Property<'auto' | 'rtl' | 'ltr'>;
-        'bind-disabled'?: Property<boolean>;
-        'bind-disableRemotePlayback'?: Property<boolean>;
-        'bind-download'?: Property<any>;
-        'bind-decoding'?: Property<'sync' | 'async' | 'auto'>;
-        'bind-draggable'?: Property<boolean>;
-        'bind-encType'?: Property<string>;
-        'bind-form'?: Property<string>;
-        'bind-formAction'?: Property<string>;
-        'bind-formEncType'?: Property<string>;
-        'bind-formMethod'?: Property<string>;
-        'bind-formNoValidate'?: Property<boolean>;
-        'bind-formTarget'?: Property<string>;
-        'bind-frameBorder'?: Property<number | string>;
-        'bind-headers'?: Property<string>;
-        'bind-height'?: Property<number | string>;
-        'bind-hidden'?: Property<boolean>;
-        'bind-high'?: Property<number>;
-        'bind-href'?: Property<string>;
-        'bind-hrefLang'?: Property<string>;
-        'bind-for'?: Property<string>;
-        'bind-htmlFor'?: Property<string>;
-        'bind-httpEquiv'?: Property<string>;
-        'bind-icon'?: Property<string>;
-        'bind-id'?: Property<string>;
-        'bind-inputMode'?: Property<string>;
-        'bind-integrity'?: Property<string>;
-        'bind-is'?: Property<string>;
-        'bind-keyParams'?: Property<string>;
-        'bind-keyType'?: Property<string>;
-        'bind-kind'?: Property<string>;
-        'bind-label'?: Property<string>;
-        'bind-lang'?: Property<string>;
-        'bind-list'?: Property<string>;
-        'bind-loading'?: Property<'eager' | 'lazy'>;
-        'bind-loop'?: Property<boolean>;
-        'bind-low'?: Property<number>;
-        'bind-manifest'?: Property<string>;
-        'bind-marginHeight'?: Property<number>;
-        'bind-marginWidth'?: Property<number>;
-        'bind-max'?: Property<number | string>;
-        'bind-maxLength'?: Property<number>;
-        'bind-media'?: Property<string>;
-        'bind-mediaGroup'?: Property<string>;
-        'bind-method'?: Property<string>;
-        'bind-min'?: Property<number | string>;
-        'bind-minLength'?: Property<number>;
-        'bind-multiple'?: Property<boolean>;
-        'bind-muted'?: Property<boolean>;
-        'bind-name'?: Property<string>;
-        'bind-nonce'?: Property<string>;
-        'bind-noValidate'?: Property<boolean>;
-        'bind-open'?: Property<boolean>;
-        'bind-optimum'?: Property<number>;
-        'bind-pattern'?: Property<string>;
-        'bind-placeholder'?: Property<string>;
-        'bind-playsInline'?: Property<boolean>;
-        'bind-poster'?: Property<string>;
-        'bind-preload'?: Property<string>;
-        'bind-radioGroup'?: Property<string>;
-        'bind-readonly'?: Property<boolean>;
-        'bind-readOnly'?: Property<boolean>;
-        'bind-rel'?: Property<string>;
-        'bind-required'?: Property<boolean>;
-        'bind-role'?: Property<string>;
-        'bind-rows'?: Property<number>;
-        'bind-rowSpan'?: Property<number>;
-        'bind-sandbox'?: Property<string>;
-        'bind-scope'?: Property<string>;
-        'bind-scoped'?: Property<boolean>;
-        'bind-scrolling'?: Property<string>;
-        'bind-seamless'?: Property<boolean>;
-        'bind-selected'?: Property<boolean>;
-        'bind-shape'?: Property<string>;
-        'bind-size'?: Property<number>;
-        'bind-sizes'?: Property<string>;
-        'bind-slot'?: Property<string>;
-        'bind-span'?: Property<number>;
-        'bind-spellcheck'?: Property<boolean>;
-        'bind-src'?: Property<string>;
-        'bind-srcset'?: Property<string>;
-        'bind-srcDoc'?: Property<string>;
-        'bind-srcLang'?: Property<string>;
-        'bind-srcSet'?: Property<string>;
-        'bind-start'?: Property<number>;
-        'bind-step'?: Property<number | string>;
-        'bind-style'?: Property<string | CSSProperties>;
-        'bind-summary'?: Property<string>;
-        'bind-tabIndex'?: Property<number>;
-        'bind-target'?: Property<string>;
-        'bind-title'?: Property<string>;
-        'bind-type'?: Property<string>;
-        'bind-useMap'?: Property<string>;
-        'bind-value'?: Property<string | string[] | number>;
-        'bind-volume'?: Property<string | number>;
-        'bind-width'?: Property<number | string>;
-        'bind-wmode'?: Property<string>;
-        'bind-wrap'?: Property<string>;
+        'bind-accept'?: Observable<string>;
+        'bind-acceptCharset'?: Observable<string>;
+        'bind-accessKey'?: Observable<string>;
+        'bind-action'?: Observable<string>;
+        'bind-allowFullScreen'?: Observable<boolean>;
+        'bind-allowTransparency'?: Observable<boolean>;
+        'bind-alt'?: Observable<string>;
+        'bind-as'?: Observable<string>;
+        'bind-async'?: Observable<boolean>;
+        'bind-autocomplete'?: Observable<string>;
+        'bind-autoComplete'?: Observable<string>;
+        'bind-autocorrect'?: Observable<string>;
+        'bind-autoCorrect'?: Observable<string>;
+        'bind-autofocus'?: Observable<boolean>;
+        'bind-autoFocus'?: Observable<boolean>;
+        'bind-autoPlay'?: Observable<boolean>;
+        'bind-capture'?: Observable<boolean | string>;
+        'bind-cellPadding'?: Observable<number | string>;
+        'bind-cellSpacing'?: Observable<number | string>;
+        'bind-charSet'?: Observable<string>;
+        'bind-challenge'?: Observable<string>;
+        'bind-checked'?: Observable<boolean>;
+        'bind-class'?: Observable<string>;
+        'bind-className'?: Observable<string>;
+        'bind-cols'?: Observable<number>;
+        'bind-colSpan'?: Observable<number>;
+        'bind-content'?: Observable<string>;
+        'bind-contentEditable'?: Observable<boolean>;
+        'bind-contextMenu'?: Observable<string>;
+        'bind-controls'?: Observable<boolean>;
+        'bind-controlsList'?: Observable<string>;
+        'bind-coords'?: Observable<string>;
+        'bind-crossOrigin'?: Observable<string>;
+        'bind-data'?: Observable<string>;
+        'bind-dateTime'?: Observable<string>;
+        'bind-default'?: Observable<boolean>;
+        'bind-defer'?: Observable<boolean>;
+        'bind-dir'?: Observable<'auto' | 'rtl' | 'ltr'>;
+        'bind-disabled'?: Observable<boolean>;
+        'bind-disableRemotePlayback'?: Observable<boolean>;
+        'bind-download'?: Observable<any>;
+        'bind-decoding'?: Observable<'sync' | 'async' | 'auto'>;
+        'bind-draggable'?: Observable<boolean>;
+        'bind-encType'?: Observable<string>;
+        'bind-form'?: Observable<string>;
+        'bind-formAction'?: Observable<string>;
+        'bind-formEncType'?: Observable<string>;
+        'bind-formMethod'?: Observable<string>;
+        'bind-formNoValidate'?: Observable<boolean>;
+        'bind-formTarget'?: Observable<string>;
+        'bind-frameBorder'?: Observable<number | string>;
+        'bind-headers'?: Observable<string>;
+        'bind-height'?: Observable<number | string>;
+        'bind-hidden'?: Observable<boolean>;
+        'bind-high'?: Observable<number>;
+        'bind-href'?: Observable<string>;
+        'bind-hrefLang'?: Observable<string>;
+        'bind-for'?: Observable<string>;
+        'bind-htmlFor'?: Observable<string>;
+        'bind-httpEquiv'?: Observable<string>;
+        'bind-icon'?: Observable<string>;
+        'bind-id'?: Observable<string>;
+        'bind-inputMode'?: Observable<string>;
+        'bind-integrity'?: Observable<string>;
+        'bind-is'?: Observable<string>;
+        'bind-keyParams'?: Observable<string>;
+        'bind-keyType'?: Observable<string>;
+        'bind-kind'?: Observable<string>;
+        'bind-label'?: Observable<string>;
+        'bind-lang'?: Observable<string>;
+        'bind-list'?: Observable<string>;
+        'bind-loading'?: Observable<'eager' | 'lazy'>;
+        'bind-loop'?: Observable<boolean>;
+        'bind-low'?: Observable<number>;
+        'bind-manifest'?: Observable<string>;
+        'bind-marginHeight'?: Observable<number>;
+        'bind-marginWidth'?: Observable<number>;
+        'bind-max'?: Observable<number | string>;
+        'bind-maxLength'?: Observable<number>;
+        'bind-media'?: Observable<string>;
+        'bind-mediaGroup'?: Observable<string>;
+        'bind-method'?: Observable<string>;
+        'bind-min'?: Observable<number | string>;
+        'bind-minLength'?: Observable<number>;
+        'bind-multiple'?: Observable<boolean>;
+        'bind-muted'?: Observable<boolean>;
+        'bind-name'?: Observable<string>;
+        'bind-nonce'?: Observable<string>;
+        'bind-noValidate'?: Observable<boolean>;
+        'bind-open'?: Observable<boolean>;
+        'bind-optimum'?: Observable<number>;
+        'bind-pattern'?: Observable<string>;
+        'bind-placeholder'?: Observable<string>;
+        'bind-playsInline'?: Observable<boolean>;
+        'bind-poster'?: Observable<string>;
+        'bind-preload'?: Observable<string>;
+        'bind-radioGroup'?: Observable<string>;
+        'bind-readonly'?: Observable<boolean>;
+        'bind-readOnly'?: Observable<boolean>;
+        'bind-rel'?: Observable<string>;
+        'bind-required'?: Observable<boolean>;
+        'bind-role'?: Observable<string>;
+        'bind-rows'?: Observable<number>;
+        'bind-rowSpan'?: Observable<number>;
+        'bind-sandbox'?: Observable<string>;
+        'bind-scope'?: Observable<string>;
+        'bind-scoped'?: Observable<boolean>;
+        'bind-scrolling'?: Observable<string>;
+        'bind-seamless'?: Observable<boolean>;
+        'bind-selected'?: Observable<boolean>;
+        'bind-shape'?: Observable<string>;
+        'bind-size'?: Observable<number>;
+        'bind-sizes'?: Observable<string>;
+        'bind-slot'?: Observable<string>;
+        'bind-span'?: Observable<number>;
+        'bind-spellcheck'?: Observable<boolean>;
+        'bind-src'?: Observable<string>;
+        'bind-srcset'?: Observable<string>;
+        'bind-srcDoc'?: Observable<string>;
+        'bind-srcLang'?: Observable<string>;
+        'bind-srcSet'?: Observable<string>;
+        'bind-start'?: Observable<number>;
+        'bind-step'?: Observable<number | string>;
+        'bind-style'?: Observable<string | CSSProperties>;
+        'bind-summary'?: Observable<string>;
+        'bind-tabIndex'?: Observable<number>;
+        'bind-target'?: Observable<string>;
+        'bind-title'?: Observable<string>;
+        'bind-type'?: Observable<string>;
+        'bind-useMap'?: Observable<string>;
+        'bind-value'?: Observable<string | string[] | number>;
+        'bind-volume'?: Observable<string | number>;
+        'bind-width'?: Observable<number | string>;
+        'bind-wmode'?: Observable<string>;
+        'bind-wrap'?: Observable<string>;
 
-        'bind-about'?: Property<string>;
-        'bind-datatype'?: Property<string>;
-        'bind-inlist'?: Property<any>;
-        'bind-prefix'?: Property<string>;
-        'bind-property'?: Property<string>;
-        'bind-resource'?: Property<string>;
-        'bind-typeof'?: Property<string>;
-        'bind-vocab'?: Property<string>;
+        'bind-about'?: Observable<string>;
+        'bind-datatype'?: Observable<string>;
+        'bind-inlist'?: Observable<any>;
+        'bind-prefix'?: Observable<string>;
+        'bind-property'?: Observable<string>;
+        'bind-resource'?: Observable<string>;
+        'bind-typeof'?: Observable<string>;
+        'bind-vocab'?: Observable<string>;
 
-        'bind-itemProp'?: Property<string>;
-        'bind-itemScope'?: Property<boolean>;
-        'bind-itemType'?: Property<string>;
-        'bind-itemID'?: Property<string>;
-        'bind-itemRef'?: Property<string>;
+        'bind-itemProp'?: Observable<string>;
+        'bind-itemScope'?: Observable<boolean>;
+        'bind-itemType'?: Observable<string>;
+        'bind-itemID'?: Observable<string>;
+        'bind-itemRef'?: Observable<string>;
     }
 
     export interface HTMLMarqueeElement extends HTMLElement {
@@ -1009,8 +1011,8 @@ declare namespace JSX {
         iframe: HTMLAttributes<HTMLIFrameElement>;
         img: HTMLAttributes<HTMLImageElement>;
         input: HTMLAttributes<HTMLInputElement> & {
-            'bind2-value-change'?: MutableProperty<string>
-            'bind2-value-input'?: MutableProperty<string>
+            'bind2-value-change'?: Subject<string>
+            'bind2-value-input'?: Subject<string>
         };
         ins: HTMLAttributes<HTMLModElement>;
         kbd: HTMLAttributes<HTMLElement>;
@@ -1125,4 +1127,98 @@ declare namespace JSX {
         tspan: SVGAttributes<SVGTSpanElement>;
         use: SVGAttributes<SVGUseElement>;
     }
+}
+export import JSXInternal = JSX
+
+export function jsx<K extends keyof HTMLElementTagNameMap>(
+    tagName: K,
+    attributes: JSX.AttributeCollection | null,
+    ...children: any[]
+): HTMLElementTagNameMap[K] {
+    const element = document.createElement(tagName);
+    if (attributes) {
+        for (const key of Object.keys(attributes)) {
+            const attributeValue = attributes[key];
+
+            if(key === 'children') {
+                appendChild(element, attributeValue);
+            } else if(key.startsWith("bind-")) {
+                const restOf = key.substring(5);
+                (attributeValue as Observable<any>).pipe(
+                    //@ts-ignore
+                    subscribeAutoDispose(element, restOf)
+                )
+            } else if(key.startsWith("bind2-")) {
+                const broken = key.substring(6).split('-');
+                (attributeValue as Subject<any>).pipe(
+                    //@ts-ignore
+                    bind(element, broken[0], broken[1])
+                )
+            } else if (key === "ref"){
+                attributeValue(element)
+            } else if (key === "className") { // JSXInternal does not allow class as a valid name
+                element.setAttribute("class", attributeValue);
+            } else if (key.startsWith("on") && typeof attributes[key] === "function") {
+                element.addEventListener(key.substring(2).toLowerCase(), attributeValue);
+            } else {
+                if (typeof attributeValue === "boolean" && attributeValue) {
+                    element.setAttribute(key, "");
+                } else {
+                    element.setAttribute(key, attributeValue);
+                }
+            }
+        }
+    }
+
+    return element;
+}
+export const jsxs = jsx
+export namespace jsx {
+    export import JSX = JSXInternal
+}
+
+function appendChild(parent: Node, child: any) {
+    if (typeof child === "undefined" || child === null) {
+        return;
+    }
+
+    switch(typeof child) {
+        case "function":
+            child(parent)
+            break
+        case "string":
+            parent.appendChild(document.createTextNode(child));
+            break
+        case "object":
+            if (child instanceof Node) {
+                parent.appendChild(child);
+            } else if(Array.isArray(child)){
+                for (const value of child) {
+                    appendChild(parent, value);
+                }
+            } else if(child instanceof Observable) {
+                child.pipe(subscribeAutoDispose(parent as HTMLElement, "textContent"))
+            } else if(child instanceof ChildrenBinder) {
+                child.bind.pipe(showIn(parent as HTMLElement, child.to))
+            } else {
+                parent.appendChild(document.createTextNode(String(child)));
+            }
+            break
+        default:
+            parent.appendChild(document.createTextNode(String(child)));
+            break
+    }
+}
+export class ChildrenBinder<T> {
+    bind: Observable<Array<T>>
+    to: (p: Observable<T>) => HTMLElement
+}
+export function forEach<T>(
+    bind: Observable<Array<T>>,
+    to: (p: Observable<T>) => HTMLElement
+) {
+    const out = new ChildrenBinder()
+    out.bind = bind
+    out.to = to
+    return out
 }

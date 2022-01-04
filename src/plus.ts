@@ -23,7 +23,7 @@ import {
 import {not, or, plusNumber, ReversibleFunction} from "./operatorReferenceShorthand";
 
 export interface HasValueSubject<T> extends Subject<T> {
-    readonly value: T
+    get value(): T;
 }
 
 export class AnonymousSubject<T> extends Subject<T> {
