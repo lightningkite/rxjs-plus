@@ -171,26 +171,21 @@ showDialogEvent.subscribe({
     next(value) {
         const top = document.createElement("div");
         top.classList.add("resp-sharing-dialog-back");
-        top.classList.add("khr");
         // const dialog = document.createElement("dialog");
         const dialog = document.createElement("div");
-        dialog.classList.add("butterfly-dialog-front");
-        dialog.classList.add("khr");
+        dialog.classList.add("rxjs-plus-dialog-front");
 
         const message = document.createElement("p");
-        message.classList.add("butterfly-dialog-message");
-        message.classList.add("khr");
+        message.classList.add("rxjs-plus-dialog-message");
         message.innerText = value._string;
         dialog.appendChild(message);
 
         const buttons = document.createElement("div");
-        buttons.classList.add("butterfly-dialog-buttons")
-        buttons.classList.add("khr")
+        buttons.classList.add("rxjs-plus-dialog-buttons")
 
         if (value.confirmation) {
             const cancel = document.createElement("button");
-            cancel.classList.add("butterfly-dialog-cancel");
-            cancel.classList.add("khr");
+            cancel.classList.add("rxjs-plus-dialog-cancel");
             cancel.textContent = "Cancel";
             cancel.onclick = (e) => {
                 e.preventDefault();
@@ -200,8 +195,7 @@ showDialogEvent.subscribe({
         }
 
         const ok = document.createElement("button");
-        ok.classList.add("butterfly-dialog-ok");
-        ok.classList.add("khr");
+        ok.classList.add("rxjs-plus-dialog-ok");
         ok.textContent = "OK";
         ok.onclick = (e) => {
             e.preventDefault();
@@ -466,18 +460,19 @@ export function swapViewSwap(view: HTMLDivElement, from: HTMLElement | null, to:
 }
 
 export function showInSwap<T extends ViewGenerator>(
-    parent: HTMLDivElement
+    parent: HTMLDivElement,
+    cssAnimationPrefix: string = "stack-"
 ): MonoTypeOperatorFunction<Array<T>> {
     let current: HTMLElement | null = null
     let previousStackSize = 0;
     return subscribeAutoDispose<HTMLDivElement, Array<T>>(parent, (element, value) => {
         const next = value[value.length - 1].generate(window)
         const newStackSize = value.length;
-        let animation = "butterfly-animate-fade"
+        let animation = `${cssAnimationPrefix}-fade`
         if (newStackSize > previousStackSize) {
-            animation = "butterfly-animate-push"
+            animation = `${cssAnimationPrefix}-push`
         } else if (newStackSize < previousStackSize) {
-            animation = "butterfly-animate-pop"
+            animation = `${cssAnimationPrefix}-pop`
         }
         swapViewSwap(parent, current, next, animation)
         current = next

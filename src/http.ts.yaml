@@ -3,9 +3,9 @@
   template:
     pattern: HttpBody
     imports:
-      HttpBody: butterfly-web/dist/net/HttpBody
+      HttpBody: rxjs-plus
 
-- id: com.lightningkite.butterfly.net.HttpResponse
+- id: com.lightningkite.rxplus.net.HttpResponse
   type: type
   template: Response
 
@@ -24,25 +24,21 @@
     imports:
       TimeoutError: rxjs
 
-- id: com.lightningkite.butterfly.net.HttpCacheMode.Default
+- id: com.lightningkite.rx.okhttp.HttpCacheMode.Default
   type: get
   template: '"default"'
-- id: com.lightningkite.butterfly.net.HttpCacheMode.NoStore
+- id: com.lightningkite.rx.okhttp.HttpCacheMode.NoStore
   type: get
   template: '"no-store"'
-- id: com.lightningkite.butterfly.net.HttpCacheMode.Reload
+- id: com.lightningkite.rx.okhttp.HttpCacheMode.Reload
   type: get
   template: '"reload"'
-- id: com.lightningkite.butterfly.net.HttpCacheMode.NoCache
+- id: com.lightningkite.rx.okhttp.HttpCacheMode.NoCache
   type: get
   template: '"no-cache"'
-- id: com.lightningkite.butterfly.net.HttpCacheMode.ForceCache
+- id: com.lightningkite.rx.okhttp.HttpCacheMode.ForceCache
   type: get
   template: '"force-cache"'
-- id: com.lightningkite.butterfly.net.HttpCacheMode.OnlyIfCached
+- id: com.lightningkite.rx.okhttp.HttpCacheMode.OnlyIfCached
   type: get
   template: '"only-if-cached"'
-
-#- id: com.lightningkite.butterfly.net.HttpCacheMode.
-#  type: get
-#  template: 'from(fetch(~0~, { body: ~1~?.data, headers: ~2~ }))'
