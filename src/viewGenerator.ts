@@ -3,6 +3,9 @@ import {v4 as uuidv4} from 'uuid';
 import {BehaviorSubject, bindCallback, MonoTypeOperatorFunction, Observable, Subject} from "rxjs";
 import {subscribeAutoDispose} from "./binding";
 
+export type StackSubject<T> = BehaviorSubject<Array<T>>
+export type ViewGeneratorStack = StackSubject<ViewGenerator>
+
 export interface ViewGenerator {
     readonly titleString?: string
 
@@ -23,10 +26,22 @@ export interface HasBackAction {
     onBackPressed(): boolean
 }
 
+export namespace HasBackActionDefaults {
+    export function onBackPressed(): boolean { return false }
+}
+
 export interface EntryPoint extends HasBackAction {
     handleDeepLink(schema: string, host: string, path: string, params: Map<string, string>): void
 
     readonly mainStack: (HasValueSubject<Array<ViewGenerator>> | null);
+}
+
+export namespace EntryPointDefaults {
+    export function onBackPressed(): boolean { return false }
+    export function handleDeepLink(schema: string, host: string, path: string, params: Map<string, string>): void {
+        console.log(`${schema}://${host}${path} ${params}`)
+    }
+    export const mainStack: (HasValueSubject<Array<ViewGenerator>> | null) = null;
 }
 
 export interface Address {
@@ -158,13 +173,10 @@ export interface DialogRequest {
     confirmation?: (() => void);
 }
 
-export function showDialog(request: DialogRequest): void {
+export function showDialog(request: DialogRequest | string): void {
+    if(typeof request === "string") request = { _string: request }
     lastDialog.next(request);
     showDialogEvent.next(request);
-}
-
-export function showDialogAlert(message: string): void {
-    showDialog({_string: message});
 }
 
 showDialogEvent.subscribe({

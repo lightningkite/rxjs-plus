@@ -2,7 +2,7 @@ import {
     BehaviorSubject, from, fromEvent,
     map, mergeMap,
     MonoTypeOperatorFunction,
-    Observable,
+    Observable, Observer,
     of,
     Subject,
     Subscription, switchMap, take, throttleTime,
@@ -218,7 +218,7 @@ export function showInSelect<T>(select: HTMLSelectElement, selected: Subject<T>,
         return obs
     }
 }
-export function showInInput<T>(input: HTMLInputElement, selected: (item: T) => void, toString: (item: T) => string = x => `${x}`): MonoTypeOperatorFunction<Array<T>> {
+export function showInInput<T>(input: HTMLInputElement, selected: ((item: T) => void) | Observer<T>, toString: (item: T) => string = x => `${x}`): MonoTypeOperatorFunction<Array<T>> {
     return obs => {
         let lastKnownArray: Array<T> = []
         obs.pipe(
@@ -236,7 +236,10 @@ export function showInInput<T>(input: HTMLInputElement, selected: (item: T) => v
         input.addEventListener("input", ev => {
             const index = lastKnownArray.findIndex(x => toString(x) === input.value)
             if(index !== -1) {
-                selected(lastKnownArray[index])
+                if(typeof selected === 'function')
+                    selected(lastKnownArray[index])
+                else
+                    selected.next(lastKnownArray[index])
             }
         })
         return obs

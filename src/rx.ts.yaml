@@ -4,228 +4,228 @@
 # Observables
 
 
-- id: io.reactivex.ObservableSource
+- id: io.reactivex.rxjava3.core.ObservableSource
   type: type
   template:
     pattern: ObservableInput<~T0~>
     imports:
       ObservableInput: rxjs
-- id: io.reactivex.SingleSource
+- id: io.reactivex.rxjava3.core.SingleSource
   type: type
   template:
     pattern: ObservableInput<~T0~>
     imports:
       ObservableInput: rxjs
 
-- id: io.reactivex.Observable
+- id: io.reactivex.rxjava3.core.Observable
   type: type
   template:
     pattern: Observable<~T0~>
     imports:
       Observable: rxjs
 
-- id: io.reactivex.Observable
+- id: io.reactivex.rxjava3.core.Observable
   type: typeRef
   template:
     pattern: Observable
     imports:
       Observable: rxjs
 
-- id: io.reactivex.Observable.subscribe
+- id: io.reactivex.rxjava3.core.Observable.subscribe
   type: call
-  arguments: [io.reactivex.Observer]
+  arguments: [io.reactivex.rxjava3.core.Observer]
   template: ~this~.subscribe(~0~)
 
-- id: io.reactivex.Observable.subscribe
+- id: io.reactivex.rxjava3.core.Observable.subscribe
   type: call
   template: ~this~.subscribe(~0~, ~1~, ~2~)
 
-- id: io.reactivex.rxkotlin.subscribeBy
+- id: io.reactivex.rxjava3.kotlin.subscribeBy
   type: call
-  receiver: io.reactivex.Observable
+  receiver: io.reactivex.rxjava3.core.Observable
   template: ~this~.subscribe(~onNext~, ~onError~, ~onComplete~)
 
 # Operators
 
-- id: io.reactivex.Observable.onErrorReturnItem
+- id: io.reactivex.rxjava3.core.Observable.onErrorReturnItem
   type: call
   template:
-    pattern: ~this~.pipe(rxOnErrorResumeNext(rxOf(~0~)))
+    pattern: ~this~.pipe(onErrorResumeNext(of(~0~)))
     imports:
-      rxOnErrorResumeNext: onErrorResumeNext from rxjs/operators
-      rxOf: of from rxjs
-- id: io.reactivex.Observable.onErrorResumeNext
+      onErrorResumeNext: rxjs/operators
+      of: rxjs
+- id: io.reactivex.rxjava3.core.Observable.onErrorResumeNext
   type: call
-  arguments: [io.reactivex.ObservableSource]
+  arguments: [io.reactivex.rxjava3.core.ObservableSource]
   template:
-    pattern: ~this~.pipe(rxOnErrorResumeNext(~0~))
+    pattern: ~this~.pipe(onErrorResumeNext(~0~))
     imports:
-      rxOnErrorResumeNext: onErrorResumeNext from rxjs/operators
-- id: io.reactivex.Observable.onErrorResumeNext
+      onErrorResumeNext: rxjs/operators
+- id: io.reactivex.rxjava3.core.Observable.onErrorResumeNext
   type: call
   template:
-    pattern: ~this~.pipe(rxCatchError(~0~))
+    pattern: ~this~.pipe(catchError(~0~))
     imports:
-      rxCatchError: catchError from rxjs/operators
+      catchError: rxjs/operators
 
-- id: io.reactivex.Observable.map
+- id: io.reactivex.rxjava3.core.Observable.map
   type: call
   template:
-    pattern: ~this~.pipe(rxMap(~0~))
+    pattern: ~this~.pipe(map(~0~))
     imports:
-      rxMap: map from rxjs/operators
+      map: rxjs/operators
 
-- id: io.reactivex.Observable.retry
+- id: io.reactivex.rxjava3.core.Observable.retry
   type: call
   template:
-    pattern: ~this~.pipe(rxRetry(~0~))
+    pattern: ~this~.pipe(retry(~0~))
     imports:
-      retry: rxjs/operators as rxRetry
+      retry: rxjs/operators
 
-- id: io.reactivex.Observable.retry
+- id: io.reactivex.rxjava3.core.Observable.retry
   type: call
   arguments: []
   template:
-    pattern: ~this~.pipe(rxRetry())
+    pattern: ~this~.pipe(retry())
     imports:
-      retry: rxjs/operators as rxRetry
+      retry: rxjs/operators
 
-- id: io.reactivex.Observable.retryWhen
+- id: io.reactivex.rxjava3.core.Observable.retryWhen
   type: call
   template:
-    pattern: ~this~.pipe(rxRetryWhenAlt(~0~))
+    pattern: ~this~.pipe(retryWhenAlt(~0~))
     imports:
-      rxRetryWhenAlt: rxjs-plus
+      retryWhenAlt: rxjs-plus
 
-- id: io.reactivex.Observable.delay
+- id: io.reactivex.rxjava3.core.Observable.delay
   type: call
   template:
-    pattern: ~this~.pipe(rxDelay(~0~))
+    pattern: ~this~.pipe(delay(~0~))
     imports:
-      delay: rxjs/operators as rxDelay
+      delay: rxjs/operators
 
-- id: io.reactivex.Observable.debounce
+- id: io.reactivex.rxjava3.core.Observable.debounce
   type: call
   template:
-    pattern: ~this~.pipe(rxDebounceTime(~0~))
+    pattern: ~this~.pipe(debounceTime(~0~))
     imports:
-      debounceTime: rxjs/operators as rxDebounceTime
+      debounceTime: rxjs/operators
 
-- id: io.reactivex.Observable.filter
+- id: io.reactivex.rxjava3.core.Observable.filter
   type: call
   template:
-    pattern: ~this~.pipe(rxFilter(~0~))
+    pattern: ~this~.pipe(filter(~0~))
     imports:
-      rxFilter: filter from rxjs/operators
+      filter: rxjs/operators
 
-- id: io.reactivex.Observable.distinct
+- id: io.reactivex.rxjava3.core.Observable.distinct
   type: call
   template:
-    pattern: ~this~.pipe(rxDistinct(~0~))
+    pattern: ~this~.pipe(distinct(~0~))
     imports:
-      rxDistinct: distinct from rxjs/operators
+      distinct: rxjs/operators
 
-- id: io.reactivex.Observable.distinctUntilChanged
+- id: io.reactivex.rxjava3.core.Observable.distinctUntilChanged
   type: call
   arguments: []
   template:
-    pattern: ~this~.pipe(rxDistinctUntilChanged())
+    pattern: ~this~.pipe(distinctUntilChanged())
     imports:
-      rxDistinctUntilChanged: distinctUntilChanged from rxjs/operators
+      distinctUntilChanged: rxjs/operators
 
-- id: io.reactivex.Observable.distinctUntilChanged
+- id: io.reactivex.rxjava3.core.Observable.distinctUntilChanged
   type: call
   template:
-    pattern: ~this~.pipe(rxDistinctUntilChanged(~0~))
+    pattern: ~this~.pipe(distinctUntilChanged(~0~))
     imports:
-      rxDistinctUntilChanged: distinctUntilChanged from rxjs/operators
+      distinctUntilChanged: rxjs/operators
 
-- id: io.reactivex.Observable.mapNotNull
+- id: io.reactivex.rxjava3.core.Observable.mapNotNull
   type: call
   template:
-    pattern: ~this~.pipe(rxMap(~0~), rxFilter(x => x !== null))
+    pattern: ~this~.pipe(map(~0~), filter(x => x !== null))
     imports:
-      rxMap: map from rxjs/operators
-      rxFilter: filter from rxjs/operators
+      map: rxjs/operators
+      filter: rxjs/operators
 
-- id: io.reactivex.Observable.filterNotNull
+- id: io.reactivex.rxjava3.core.Observable.filterNotNull
   type: call
   template:
-    pattern: ~this~.pipe(rxFilter(x => x !== null))
+    pattern: ~this~.pipe(filter(x => x !== null))
     imports:
-      rxFilter: filter from rxjs/operators
+      filter: rxjs/operators
 
 - id: com.lightningkite.rx.combineLatest
   type: call
   template:
-    pattern: rxCombineLatest([~this~, ~0~]).pipe(rxMap(x => (~1~)(x[0], x[1])))
+    pattern: combineLatest([~this~, ~0~]).pipe(map(x => (~1~)(x[0], x[1])))
     imports:
-      rxMap: map from rxjs/operators
-      rxCombineLatest: combineLatest from rxjs
-
-- id: com.lightningkite.rx.combineLatest
-  type: call
-  receiver: kotlin.collections.List
-  arguments: []
-  template:
-    pattern: rxCombineLatest(~this~)
-    imports:
-      rxMap: map from rxjs/operators
-      rxCombineLatest: combineLatest from rxjs
+      map: rxjs/operators
+      combineLatest: rxjs
 
 - id: com.lightningkite.rx.combineLatest
   type: call
   receiver: kotlin.collections.List
+  arguments: []
   template:
-    pattern: rxCombineLatest(~this~).pipe(rxMap(~0~))
+    pattern: combineLatest(~this~)
     imports:
-      rxMap: map from rxjs/operators
-      rxCombineLatest: combineLatest from rxjs
+      map: rxjs/operators
+      combineLatest: rxjs
 
-- id: io.reactivex.Observable.skip
+- id: com.lightningkite.rx.combineLatest
+  type: call
+  receiver: kotlin.collections.List
+  template:
+    pattern: combineLatest(~this~).pipe(map(~0~))
+    imports:
+      map: rxjs/operators
+      combineLatest: rxjs
+
+- id: io.reactivex.rxjava3.core.Observable.skip
   type: call
   template:
-    pattern: ~this~.pipe(rxSkip(0))
+    pattern: ~this~.pipe(skip(0))
     imports:
-      rxSkip: skip from rxjs/operators
+      skip: rxjs/operators
 
-- id: io.reactivex.Observable.flatMap
+- id: io.reactivex.rxjava3.core.Observable.flatMap
   type: call
   template:
-    pattern: ~this~.pipe(rxFlatMap(~0~))
+    pattern: ~this~.pipe(mergeMap(~0~))
     imports:
-      rxFlatMap: flatMap from rxjs/operators
+      mergeMap: rxjs/operators
 
-- id: io.reactivex.Observable.switchMap
+- id: io.reactivex.rxjava3.core.Observable.switchMap
   type: call
   template:
-    pattern: ~this~.pipe(rxSwitchMap(~0~))
+    pattern: ~this~.pipe(switchMap(~0~))
     imports:
-      rxSwitchMap: switchMap from rxjs/operators
+      switchMap: rxjs/operators
 
-- id: io.reactivex.Observable.subscribeOn
+- id: io.reactivex.rxjava3.core.Observable.subscribeOn
   type: call
   template: ~this~
 
-- id: io.reactivex.Observable.scheduleOn
+- id: io.reactivex.rxjava3.core.Observable.scheduleOn
   type: call
   template: ~this~
 
-- id: io.reactivex.Observable.interval
+- id: io.reactivex.rxjava3.core.Observable.interval
   type: call
   template:
-    pattern: rxInterval(~0~)
+    pattern: interval(~0~)
     imports:
-      rxInterval: interval from rxjs
+      interval: rxjs
 
-- id: io.reactivex.Observable.create
+- id: io.reactivex.rxjava3.core.Observable.create
   type: call
   template:
     pattern: new Observable(~0~)
     imports:
       Observable: rxjs
 
-- id: io.reactivex.Observable.create
+- id: io.reactivex.rxjava3.core.Observable.create
   type: call
   hasExplicitTypeArguments: true
   template:
@@ -233,189 +233,189 @@
     imports:
       Observable: rxjs
 
-- id: io.reactivex.Observable.fromIterable
+- id: io.reactivex.rxjava3.core.Observable.fromIterable
   type: call
   template:
-    pattern: rxFrom(~0~)
+    pattern: from(~0~)
     imports:
-      rxFrom: from from rxjs
+      from: rxjs
 
-- id: io.reactivex.Observable.just
+- id: io.reactivex.rxjava3.core.Observable.just
   type: call
   template:
-    pattern: rxOf(~*~)
+    pattern: of(~*~)
     imports:
-      rxOf: of from rxjs
+      of: rxjs
 
-- id: io.reactivex.Observable.error
+- id: io.reactivex.rxjava3.core.Observable.error
   type: call
   template:
-    pattern: rxThrowError(~*~)
+    pattern: throwError(~*~)
     imports:
-      rxThrowError: throwError from rxjs
+      throwError: rxjs
 
-- id: io.reactivex.Observable.empty
+- id: io.reactivex.rxjava3.core.Observable.empty
   type: call
   template:
-    pattern: rxOf()
+    pattern: of()
     imports:
-      rxOf: of from rxjs
+      of: rxjs
 
-- id: io.reactivex.Observable.never
+- id: io.reactivex.rxjava3.core.Observable.never
   type: call
   template:
-    pattern: rxNEVER
+    pattern: NEVER
     imports:
-      rxNEVER: NEVER from rxjs
+      NEVER: rxjs
 
-- id: io.reactivex.Observable.observeOn
+- id: io.reactivex.rxjava3.core.Observable.observeOn
   type: call
   template: ~this~
 
-- id: io.reactivex.Observable.doFinally
+- id: io.reactivex.rxjava3.core.Observable.doFinally
   type: call
   template:
-    pattern: ~this~.pipe(rxFinalize(~0~))
+    pattern: ~this~.pipe(finalize(~0~))
     imports:
-      rxFinalize: finalize from rxjs/operators
+      finalize: rxjs/operators
 
-- id: io.reactivex.Observable.doOnNext
+- id: io.reactivex.rxjava3.core.Observable.doOnNext
   type: call
   template:
-    pattern: ~this~.pipe(rxTap(~0~))
+    pattern: ~this~.pipe(tap(~0~))
     imports:
-      rxTap: tap from rxjs/operators
+      tap: rxjs/operators
 
-- id: io.reactivex.Observable.doOnSubscribe
+- id: io.reactivex.rxjava3.core.Observable.doOnSubscribe
   type: call
   template:
-    pattern: ~this~.pipe(rxDoOnSubscribe(~0~))
+    pattern: ~this~.pipe(doOnSubscribe(~0~))
     imports:
-      rxDoOnSubscribe: doOnSubscribe from rxjs-plus
+      doOnSubscribe: rxjs-plus
 
-- id: io.reactivex.Observable.doOnDispose
+- id: io.reactivex.rxjava3.core.Observable.doOnDispose
   type: call
   template:
-    pattern: ~this~.pipe(rxDoOnDispose(~0~))
+    pattern: ~this~.pipe(doOnDispose(~0~))
     imports:
-      rxDoOnDispose: doOnDispose from rxjs-plus
+      doOnDispose: rxjs-plus
 
-- id: io.reactivex.Observable.doOnError
+- id: io.reactivex.rxjava3.core.Observable.doOnError
   type: call
   template:
-    pattern: ~this~.pipe(rxTap(undefined, ~0~))
+    pattern: ~this~.pipe(tap(undefined, ~0~))
     imports:
-      rxTap: tap from rxjs/operators
+      tap: rxjs/operators
 
-- id: io.reactivex.Observable.doOnComplete
+- id: io.reactivex.rxjava3.core.Observable.doOnComplete
   type: call
   template:
-    pattern: ~this~.pipe(rxTap(undefined, undefined, ~0~))
+    pattern: ~this~.pipe(tap(undefined, undefined, ~0~))
     imports:
-      rxTap: tap from rxjs/operators
+      tap: rxjs/operators
 
-- id: io.reactivex.Observable.doOnTerminate
+- id: io.reactivex.rxjava3.core.Observable.doOnTerminate
   type: call
   template:
-    pattern: ~this~.pipe(rxTap(undefined, ~0~, ~0~))
+    pattern: ~this~.pipe(tap(undefined, ~0~, ~0~))
     imports:
-      tap: rxjs/operators as rxTap
+      tap: rxjs/operators
 
-- id: io.reactivex.Observable.startWith
+- id: io.reactivex.rxjava3.core.Observable.startWithItem
   type: call
   template:
-    pattern: rxConcat(rxOf(~0~), ~this~)
+    pattern: concat(of(~0~), ~this~)
     imports:
-      rxOf: of from rxjs
-      rxConcat: concat from rxjs
+      of: rxjs
+      concat: rxjs
 
-- id: io.reactivex.Observable.concat
+- id: io.reactivex.rxjava3.core.Observable.concat
   type: call
   template:
-    pattern: rxConcat(~*~)
+    pattern: concat(~*~)
     imports:
-      rxConcat: concat from rxjs
+      concat: rxjs
 
-- id: io.reactivex.Observable.replay
+- id: io.reactivex.rxjava3.core.Observable.replay
   type: call
   template:
-    pattern: ~this~.pipe(rxPublishReplay(~0~))
+    pattern: ~this~.pipe(publishReplay(~0~))
     imports:
-      rxPublishReplay: publishReplay from rxjs/operators
+      publishReplay: rxjs/operators
 
-- id: io.reactivex.Observable.publish
+- id: io.reactivex.rxjava3.core.Observable.publish
   type: call
   template:
-    pattern: ~this~.pipe(rxPublish())
+    pattern: ~this~.pipe(publish())
     imports:
-      rxPublish: publish from rxjs/operators
+      publish: rxjs/operators
 
-- id: io.reactivex.Observable.share
+- id: io.reactivex.rxjava3.core.Observable.share
   type: call
   template:
-    pattern: ~this~.pipe(rxShare())
+    pattern: ~this~.pipe(share())
     imports:
-      rxShare: share from rxjs/operators
+      share: rxjs/operators
 
-- id: io.reactivex.observables.ConnectableObservable.refCount
+- id: io.reactivex.rxjava3.observables.ConnectableObservable.refCount
   type: call
   template:
-    pattern: ~this~.pipe(rxRefCount())
+    pattern: ~this~.pipe(refCount())
     imports:
-      rxRefCount: refCount from rxjs/operators
+      refCount: rxjs/operators
 
-- id: io.reactivex.observables.ConnectableObservable.autoConnect
+- id: io.reactivex.rxjava3.observables.ConnectableObservable.autoConnect
   type: call
   template:
-    pattern: ~this~.pipe(rxAutoconnect())
+    pattern: ~this~.pipe(autoconnect())
     imports:
-      rxAutoconnect: autoconnect from rxjs-plus
+      autoconnect: rxjs-plus
 
-- id: io.reactivex.Observable.take
+- id: io.reactivex.rxjava3.core.Observable.take
   type: call
   template:
-    pattern: ~this~.pipe(rxTake(~0~))
+    pattern: ~this~.pipe(take(~0~))
     imports:
-      rxTake: take from rxjs/operators
+      take: rxjs/operators
 
-- id: io.reactivex.Observable.singleOrError
+- id: io.reactivex.rxjava3.core.Observable.singleOrError
   type: call
   template: ~this~
 
 # Observer
-- id: io.reactivex.Observer
+- id: io.reactivex.rxjava3.core.Observer
   type: type
   template:
     pattern: Observer<~T0~>
     imports:
       Observer: rxjs
 
-- id: io.reactivex.Observer.onNext
+- id: io.reactivex.rxjava3.core.Observer.onNext
   type: call
   template: ~this~.next(~0~)
 
-- id: io.reactivex.Observer.onError
+- id: io.reactivex.rxjava3.core.Observer.onError
   type: call
   template: ~this~.error(~0~)
 
-- id: io.reactivex.Observer.onComplete
+- id: io.reactivex.rxjava3.core.Observer.onComplete
   type: call
   template: ~this~.complete()
 
-- id: io.reactivex.Emitter.onNext
+- id: io.reactivex.rxjava3.core.Emitter.onNext
   type: call
   template: ~this~.next(~0~)
 
-- id: io.reactivex.Emitter.onError
+- id: io.reactivex.rxjava3.core.Emitter.onError
   type: call
   template: ~this~.error(~0~)
 
-- id: io.reactivex.Emitter.onComplete
+- id: io.reactivex.rxjava3.core.Emitter.onComplete
   type: call
   template: ~this~.complete()
 
 # ObservableEmitter
-- id: io.reactivex.ObservableEmitter
+- id: io.reactivex.rxjava3.core.ObservableEmitter
   type: type
   template:
     pattern: Observer<~T0~>
@@ -426,106 +426,106 @@
 # Single
 
 
-- id: io.reactivex.Single
+- id: io.reactivex.rxjava3.core.Single
   type: type
   template:
     pattern: Observable<~T0~>
     imports:
       Observable: rxjs
 
-- id: io.reactivex.Single
+- id: io.reactivex.rxjava3.core.Single
   type: typeRef
   template:
     pattern: Observable
     imports:
       Observable: rxjs
 
-- id: io.reactivex.Single.observeOn
+- id: io.reactivex.rxjava3.core.Single.observeOn
   type: call
   template: ~this~
 
-- id: io.reactivex.Single.subscribe
+- id: io.reactivex.rxjava3.core.Single.subscribe
   type: call
-  arguments: [io.reactivex.Observer]
+  arguments: [io.reactivex.rxjava3.core.Observer]
   template: ~this~.subscribe(~0~)
 
-- id: io.reactivex.Single.subscribe
+- id: io.reactivex.rxjava3.core.Single.subscribe
   type: call
   template: ~this~.subscribe(~0~, ~1~)
 
-- id: io.reactivex.Single.subscribe
+- id: io.reactivex.rxjava3.core.Single.subscribe
   type: call
-  arguments: [io.reactivex.functions.BiConsumer]
+  arguments: [io.reactivex.rxjava3.core.functions.BiConsumer]
   template:
     pattern: ~this~.subscribe(new SingleObserver(~0~))
     imports:
       SingleObserver: rxjs-plus
 
-- id: io.reactivex.rxkotlin.subscribeBy
+- id: io.reactivex.rxjava3.kotlin.subscribeBy
   type: call
-  receiver: io.reactivex.Single
+  receiver: io.reactivex.rxjava3.core.Single
   template: ~this~.subscribe(~onSuccess~, ~onError~)
 
 # Operators for Single
-- id: io.reactivex.Single.cache
+- id: io.reactivex.rxjava3.core.Single.cache
   type: call
   template:
-    pattern: ~this~.pipe(rxShareReplay(1))
+    pattern: ~this~.pipe(shareReplay(1))
     imports:
-      rxShareReplay: shareReplay from rxjs/operators
+      shareReplay: rxjs/operators
 
-- id: io.reactivex.Single.map
+- id: io.reactivex.rxjava3.core.Single.map
   type: call
   template:
-    pattern: ~this~.pipe(rxMap(~0~))
+    pattern: ~this~.pipe(map(~0~))
     imports:
-      map: rxjs/operators as rxMap
+      map: rxjs/operators
 
-- id: io.reactivex.Single.retry
+- id: io.reactivex.rxjava3.core.Single.retry
   type: call
   template:
-    pattern: ~this~.pipe(rxRetry(~0~))
+    pattern: ~this~.pipe(retry(~0~))
     imports:
-      retry: rxjs/operators as rxRetry
+      retry: rxjs/operators
 
-- id: io.reactivex.Single.retry
+- id: io.reactivex.rxjava3.core.Single.retry
   type: call
   arguments: []
   template:
-    pattern: ~this~.pipe(rxRetry())
+    pattern: ~this~.pipe(retry())
     imports:
-      retry: rxjs/operators as rxRetry
+      retry: rxjs/operators
 
-- id: io.reactivex.Single.delay
+- id: io.reactivex.rxjava3.core.Single.delay
   type: call
   template:
-    pattern: ~this~.pipe(rxDelay(~0~))
+    pattern: ~this~.pipe(delay(~0~))
     imports:
-      delay: rxjs/operators as rxDelay
+      delay: rxjs/operators
 
-- id: io.reactivex.Single.flatMap
+- id: io.reactivex.rxjava3.core.Single.flatMap
   type: call
   template:
-    pattern: ~this~.pipe(rxFlatMap(~0~))
+    pattern: ~this~.pipe(mergeMap(~0~))
     imports:
-      flatMap: rxjs/operators as rxFlatMap
+      mergeMap: rxjs/operators
 
-- id: io.reactivex.Single.subscribeOn
+- id: io.reactivex.rxjava3.core.Single.subscribeOn
   type: call
   template: ~this~
 
-- id: io.reactivex.Single.scheduleOn
+- id: io.reactivex.rxjava3.core.Single.scheduleOn
   type: call
   template: ~this~
 
-- id: io.reactivex.Single.create
+- id: io.reactivex.rxjava3.core.Single.create
   type: call
   template:
     pattern: new Observable(~0~)
     imports:
       Observable: rxjs
 
-- id: io.reactivex.Single.create
+- id: io.reactivex.rxjava3.core.Single.create
   type: call
   hasExplicitTypeArguments: true
   template:
@@ -533,158 +533,366 @@
     imports:
       Observable: rxjs
 
-- id: io.reactivex.Single.just
+- id: io.reactivex.rxjava3.core.Single.just
   type: call
   template:
-    pattern: rxOf(~0~)
+    pattern: of(~0~)
     imports:
-      of: rxjs as rxOf
+      of: rxjs as of
 
-- id: io.reactivex.Single.zip
+- id: io.reactivex.rxjava3.core.Single.zip
   type: call
   template:
-    pattern: rxZip(...~0~).pipe(rxMap(~1~))
+    pattern: zip(...~0~).pipe(map(~1~))
     imports:
-      rxZip: zip from rxjs
-      rxMap: map from rxjs/operators
+      zip: rxjs
+      map: rxjs/operators
 
 - id: com.lightningkite.rx.zip
   type: call
   template:
-    pattern: rxZip(...~this~)
+    pattern: zip(...~this~)
     imports:
-      rxZip: zip from rxjs
+      zip: rxjs
 
-- id: io.reactivex.Single.onErrorReturnItem
+- id: io.reactivex.rxjava3.core.Single.onErrorReturnItem
   type: call
   template:
-    pattern: ~this~.pipe(rxOnErrorResumeNext(rxOf(~0~)))
+    pattern: ~this~.pipe(onErrorResumeNext(of(~0~)))
     imports:
-      rxOnErrorResumeNext: onErrorResumeNext from rxjs/operators
-      rxOf: of from rxjs
+      onErrorResumeNext: rxjs/operators
+      of: rxjs
 
-- id: io.reactivex.Single.error
+- id: io.reactivex.rxjava3.core.Single.error
   type: call
   template:
-    pattern: rxThrowError(~*~)
+    pattern: throwError(~*~)
     imports:
-      rxThrowError: throwError from rxjs
+      throwError: rxjs
 
-- id: io.reactivex.Single.doOnSubscribe
+- id: io.reactivex.rxjava3.core.Single.doOnSubscribe
   type: call
   template:
     pattern: doOnSubscribe(~this~, ~0~)
     imports:
       doOnSubscribe: rxjs-plus
 
-- id: io.reactivex.Single.doFinally
+- id: io.reactivex.rxjava3.core.Single.doFinally
   type: call
   template:
-    pattern: ~this~.pipe(rxFinalize(~0~))
+    pattern: ~this~.pipe(finalize(~0~))
     imports:
-      finalize: rxjs/operators as rxFinalize
+      finalize: rxjs/operators
 
-- id: io.reactivex.Single.doOnError
+- id: io.reactivex.rxjava3.core.Single.doOnError
   type: call
   template:
-    pattern: ~this~.pipe(rxTap(undefined, ~0~))
+    pattern: ~this~.pipe(tap(undefined, ~0~))
     imports:
-      tap: rxjs/operators as rxTap
+      tap: rxjs/operators
 
-- id: io.reactivex.Single.doOnSuccess
+- id: io.reactivex.rxjava3.core.Single.doOnSuccess
   type: call
   template:
-    pattern: ~this~.pipe(rxTap(~0~))
+    pattern: ~this~.pipe(tap(~0~))
     imports:
-      tap: rxjs/operators as rxTap
+      tap: rxjs/operators
 
-- id: io.reactivex.Single.doOnTerminate
+- id: io.reactivex.rxjava3.core.Single.doOnTerminate
   type: call
   template:
-    pattern: ~this~.pipe(rxTap(~0~, ~0~))
+    pattern: ~this~.pipe(tap(~0~, ~0~))
     imports:
-      tap: rxjs/operators as rxTap
+      tap: rxjs/operators
 
-- id: io.reactivex.Single.toObservable
+- id: io.reactivex.rxjava3.core.Single.toObservable
   type: call
   template: ~this~
 
 # SingleEmitter
 
-- id: io.reactivex.SingleEmitter
+- id: io.reactivex.rxjava3.core.SingleEmitter
   type: type
   template:
     pattern: Observer<~T0~>
     imports:
       Observer: rxjs
 
-- id: io.reactivex.SingleEmitter.onSuccess
+- id: io.reactivex.rxjava3.core.SingleEmitter.onSuccess
   type: call
   template: ~this~.next(~0~); ~this~.complete()
 
-- id: io.reactivex.SingleEmitter.onError
+- id: io.reactivex.rxjava3.core.SingleEmitter.onError
+  type: call
+  template: ~this~.error(~0~)
+
+
+# Maybe
+
+
+- id: io.reactivex.rxjava3.core.Maybe
+  type: type
+  template:
+    pattern: Observable<~T0~>
+    imports:
+      Observable: rxjs
+
+- id: io.reactivex.rxjava3.core.Maybe
+  type: typeRef
+  template:
+    pattern: Observable
+    imports:
+      Observable: rxjs
+
+- id: io.reactivex.rxjava3.core.Maybe.observeOn
+  type: call
+  template: ~this~
+
+- id: io.reactivex.rxjava3.core.Maybe.subscribe
+  type: call
+  arguments: [io.reactivex.rxjava3.core.Observer]
+  template: ~this~.subscribe(~0~)
+
+- id: io.reactivex.rxjava3.core.Maybe.subscribe
+  type: call
+  template: ~this~.subscribe(~0~, ~1~)
+
+- id: io.reactivex.rxjava3.core.Maybe.subscribe
+  type: call
+  arguments: [io.reactivex.rxjava3.core.functions.BiConsumer]
+  template:
+    pattern: ~this~.subscribe(new MaybeObserver(~0~))
+    imports:
+      MaybeObserver: rxjs-plus
+
+- id: io.reactivex.rxjava3.kotlin.subscribeBy
+  type: call
+  receiver: io.reactivex.rxjava3.core.Maybe
+  template: ~this~.subscribe(~onSuccess~, ~onError~)
+
+# Operators for Maybe
+- id: io.reactivex.rxjava3.core.Maybe.cache
+  type: call
+  template:
+    pattern: ~this~.pipe(shareReplay(1))
+    imports:
+      shareReplay: rxjs/operators
+
+- id: io.reactivex.rxjava3.core.Maybe.map
+  type: call
+  template:
+    pattern: ~this~.pipe(map(~0~))
+    imports:
+      map: rxjs/operators
+
+- id: io.reactivex.rxjava3.core.Maybe.retry
+  type: call
+  template:
+    pattern: ~this~.pipe(retry(~0~))
+    imports:
+      retry: rxjs/operators
+
+- id: io.reactivex.rxjava3.core.Maybe.retry
+  type: call
+  arguments: []
+  template:
+    pattern: ~this~.pipe(retry())
+    imports:
+      retry: rxjs/operators
+
+- id: io.reactivex.rxjava3.core.Maybe.delay
+  type: call
+  template:
+    pattern: ~this~.pipe(delay(~0~))
+    imports:
+      delay: rxjs/operators
+
+- id: io.reactivex.rxjava3.core.Maybe.flatMap
+  type: call
+  template:
+    pattern: ~this~.pipe(mergeMap(~0~))
+    imports:
+      mergeMap: rxjs/operators
+
+- id: io.reactivex.rxjava3.core.Maybe.subscribeOn
+  type: call
+  template: ~this~
+
+- id: io.reactivex.rxjava3.core.Maybe.scheduleOn
+  type: call
+  template: ~this~
+
+- id: io.reactivex.rxjava3.core.Maybe.create
+  type: call
+  template:
+    pattern: new Observable(~0~)
+    imports:
+      Observable: rxjs
+
+- id: io.reactivex.rxjava3.core.Maybe.create
+  type: call
+  hasExplicitTypeArguments: true
+  template:
+    pattern: new Observable<~T0~>(~0~)
+    imports:
+      Observable: rxjs
+
+- id: io.reactivex.rxjava3.core.Maybe.just
+  type: call
+  template:
+    pattern: of(~0~)
+    imports:
+      of: rxjs as of
+
+- id: io.reactivex.rxjava3.core.Maybe.zip
+  type: call
+  template:
+    pattern: zip(...~0~).pipe(map(~1~))
+    imports:
+      zip: rxjs
+      map: rxjs/operators
+
+- id: com.lightningkite.rx.zip
+  type: call
+  template:
+    pattern: zip(...~this~)
+    imports:
+      zip: rxjs
+
+- id: io.reactivex.rxjava3.core.Maybe.onErrorReturnItem
+  type: call
+  template:
+    pattern: ~this~.pipe(onErrorResumeNext(of(~0~)))
+    imports:
+      onErrorResumeNext: rxjs/operators
+      of: rxjs
+
+- id: io.reactivex.rxjava3.core.Maybe.error
+  type: call
+  template:
+    pattern: throwError(~*~)
+    imports:
+      throwError: rxjs
+
+- id: io.reactivex.rxjava3.core.Maybe.doOnSubscribe
+  type: call
+  template:
+    pattern: doOnSubscribe(~this~, ~0~)
+    imports:
+      doOnSubscribe: rxjs-plus
+
+- id: io.reactivex.rxjava3.core.Maybe.doFinally
+  type: call
+  template:
+    pattern: ~this~.pipe(finalize(~0~))
+    imports:
+      finalize: rxjs/operators
+
+- id: io.reactivex.rxjava3.core.Maybe.doOnError
+  type: call
+  template:
+    pattern: ~this~.pipe(tap(undefined, ~0~))
+    imports:
+      tap: rxjs/operators
+
+- id: io.reactivex.rxjava3.core.Maybe.doOnSuccess
+  type: call
+  template:
+    pattern: ~this~.pipe(tap(~0~))
+    imports:
+      tap: rxjs/operators
+
+- id: io.reactivex.rxjava3.core.Maybe.doOnTerminate
+  type: call
+  template:
+    pattern: ~this~.pipe(tap(~0~, ~0~))
+    imports:
+      tap: rxjs/operators
+
+- id: io.reactivex.rxjava3.core.Maybe.toObservable
+  type: call
+  template: ~this~
+
+# MaybeEmitter
+
+- id: io.reactivex.rxjava3.core.MaybeEmitter
+  type: type
+  template:
+    pattern: Observer<~T0~>
+    imports:
+      Observer: rxjs
+
+- id: io.reactivex.rxjava3.core.MaybeEmitter.onSuccess
+  type: call
+  template: ~this~.next(~0~); ~this~.complete()
+
+- id: io.reactivex.rxjava3.core.MaybeEmitter.onError
   type: call
   template: ~this~.error(~0~)
 
 
 # Disposable
 
-- id: io.reactivex.disposables.Disposable
+- id: io.reactivex.rxjava3.disposables.Disposable
   type: type
   template:
     pattern: SubscriptionLike
     imports:
       SubscriptionLike: rxjs
 
-- id: io.reactivex.disposables.Disposable.dispose
+- id: io.reactivex.rxjava3.kotlin.addTo
+  type: call
+  template: ~0~.parts.push(~this~)
+
+- id: io.reactivex.rxjava3.disposables.Disposable.dispose
   type: call
   template: ~this~.unsubscribe()
 
-- id: io.reactivex.disposables.Disposable.isDisposed
+- id: io.reactivex.rxjava3.disposables.Disposable.isDisposed
   type: call
   template: ~this~.closed
 
-- id: io.reactivex.disposables.Disposable.disposed
+- id: io.reactivex.rxjava3.disposables.Disposable.disposed
   type: get
   template: ~this~.closed
 
 # Subjects
 
-- id: io.reactivex.subjects.Subject
+- id: io.reactivex.rxjava3.subjects.Subject
   type: type
   template:
     pattern: Subject<~T0~>
     imports:
       Subject: rxjs
-- id: io.reactivex.subjects.Subject.hasObservers
+- id: io.reactivex.rxjava3.subjects.Subject.hasObservers
   type: call
   template: (~this~.observers.length > 0)
-- id: io.reactivex.subjects.PublishSubject
+- id: io.reactivex.rxjava3.subjects.PublishSubject
   type: type
   template:
     pattern: Subject<~T0~>
     imports:
       Subject: rxjs
-- id: io.reactivex.subjects.PublishSubject.create
+- id: io.reactivex.rxjava3.subjects.PublishSubject.create
   type: call
   template:
     pattern: new Subject()
     imports:
       Subject: rxjs
 
-- id: io.reactivex.subjects.BehaviorSubject
+- id: io.reactivex.rxjava3.subjects.BehaviorSubject
   type: type
   template:
     pattern: ReplaySubject<~T0~>
     imports:
       ReplaySubject: rxjs
-- id: io.reactivex.subjects.BehaviorSubject.create
+- id: io.reactivex.rxjava3.subjects.BehaviorSubject.create
   type: call
   template:
     pattern: new ReplaySubject()
     imports:
       Subject: rxjs
-- id: io.reactivex.subjects.BehaviorSubject.createDefault
+- id: io.reactivex.rxjava3.subjects.BehaviorSubject.createDefault
   type: call
   template:
     pattern: new ReplaySubject(~0~)

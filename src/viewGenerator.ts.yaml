@@ -223,9 +223,9 @@
     imports:
       xStackReset: 'rxjs-plus'
 
-- id: com.lightningkite.rx.android.showIn
+- id: com.lightningkite.rx.viewgenerators.showIn
   type: call
-  arguments: [SwapView, ActivityAccess, ViewTransition]
+  arguments: [SwapView, ActivityAccess, '*']
   template:
     pattern: '~this~.pipe(showInSwap(~0~))'
     imports:

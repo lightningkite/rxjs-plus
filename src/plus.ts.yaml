@@ -39,6 +39,32 @@
     imports:
       subjectIsNotEqualTo: rxjs-plus
 
+- id: com.lightningkite.rx.ValueSubject
+  type: type
+  template:
+    pattern: BehaviorSubject<~T0~>
+    imports:
+      BehaviorSubject: rxjs
+
+- id: com.lightningkite.rx.ValueSubject
+  type: call
+  hasExplicitTypeArguments: true
+  template:
+    pattern: new BehaviorSubject<~T0~>(~0~)
+    imports:
+      BehaviorSubject: rxjs
+
+- id: com.lightningkite.rx.ValueSubject
+  type: call
+  template:
+    pattern: new BehaviorSubject(~0~)
+    imports:
+      BehaviorSubject: rxjs
+
+- id: com.lightningkite.rx.HasValueSubject.value
+  type: set
+  template: ~this~.next(~value~)
+
 - id: com.lightningkite.rx.get
   type: call
   receiver: HasValueSubject
@@ -180,6 +206,35 @@
       mapReversible: rxjs-plus
       divNumber: rxjs-plus
 
+- id: com.lightningkite.rx.map
+  type: call
+  template:
+    pattern: '~this~.pipe(mapSubject(~0~, ~1~))'
+    imports:
+      mapSubject: rxjs-plus
+
+- id: com.lightningkite.rx.mapMaybeWrite
+  type: call
+  template:
+    pattern: '~this~.pipe(mapSubjectMaybeWrite(~0~, ~1~))'
+    imports:
+      mapSubjectMaybeWrite: rxjs-plus
+
+- id: com.lightningkite.rx.mapWithExisting
+  type: call
+  template:
+    pattern: '~this~.pipe(mapSubjectWithExisting(~0~, ~1~))'
+    imports:
+      mapSubjectWithExisting: rxjs-plus
+
+- id: com.lightningkite.rx.withWrite
+  receiver: Subject
+  type: call
+  template:
+    pattern: '~this~.pipe(withWrite(~0~))'
+    imports:
+      withWrite: rxjs-plus
+
 - id: com.lightningkite.rx.notNull
   type: call
   template:
@@ -203,6 +258,13 @@
       map: rxjs
 
 - id: com.lightningkite.rx.mapToNullable
+  type: call
+  template:
+    pattern: '~this~.pipe(map(~0~))'
+    imports:
+      map: rxjs
+
+- id: com.lightningkite.rx.mapFromNullable
   type: call
   template:
     pattern: '~this~.pipe(map(~0~))'

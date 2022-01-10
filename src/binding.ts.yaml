@@ -22,7 +22,7 @@
 
 - id: com.lightningkite.rx.android.onClick
   type: call
-  arguments: [Observable, Long, Function]
+  arguments: [Observable, Long, function]
   template:
     pattern: "onThrottledEventDoWith(~this~, 'click', ~0~, ~2~)"
     imports:
@@ -30,7 +30,7 @@
 
 - id: com.lightningkite.rx.android.onClickNullable
   type: call
-  arguments: [Observable, Long, Function]
+  arguments: [Observable, Long, function]
   template:
     pattern: "onThrottledEventDoWith(~this~, 'click', ~0~, ~2~)"
     imports:
@@ -45,7 +45,7 @@
 
 - id: com.lightningkite.rx.android.onLongClick
   type: call
-  arguments: [Observable, Long, Function]
+  arguments: [Observable, Long, function]
   template:
     pattern: "onThrottledEventDoWith(~this~, 'contextmenu', ~0~, ~2~)"
     imports:
@@ -53,7 +53,7 @@
 
 - id: com.lightningkite.rx.android.onLongClickNullable
   type: call
-  arguments: [Observable, Long, Function]
+  arguments: [Observable, Long, function]
   template:
     pattern: "onThrottledEventDoWith(~this~, 'contextmenu', ~0~, ~2~)"
     imports:
@@ -132,7 +132,7 @@
 
 - id: com.lightningkite.rx.android.showIn
   type: call
-  arguments: [RecyclerView, Function]
+  arguments: [RecyclerView, function]
   template:
     pattern: '~this~.pipe(showIn(~0~, ~1~))'
     imports:
@@ -140,7 +140,7 @@
 
 - id: com.lightningkite.rx.android.showIn
   type: call
-  arguments: [RecyclerView, Function, Function]
+  arguments: [RecyclerView, function, function]
   template:
     pattern: '~this~.pipe(showInTyped(~0~, ~1~, ~2~))'
     imports:
@@ -148,7 +148,7 @@
 
 - id: com.lightningkite.rx.android.showIn
   type: call
-  arguments: [LinearLayout, Function]
+  arguments: [LinearLayout, function]
   template:
     pattern: '~this~.pipe(showIn(~0~, ~1~))'
     imports:
@@ -156,7 +156,7 @@
 
 - id: com.lightningkite.rx.android.showIn
   type: call
-  arguments: [LinearLayout, Function, Function]
+  arguments: [LinearLayout, function, function]
   template:
     pattern: '~this~.pipe(showInTyped(~0~, ~1~, ~2~))'
     imports:
@@ -164,7 +164,7 @@
 
 - id: com.lightningkite.rx.android.showIn
   type: call
-  arguments: [Spinner, Subject, Function]
+  arguments: [Spinner, Subject, function]
   suppliedArguments: [spinner, selected]
   template:
     pattern: '~this~.pipe(showInSelect(~0~, ~1~))'
@@ -173,7 +173,7 @@
 
 - id: com.lightningkite.rx.android.showIn
   type: call
-  arguments: [Spinner, Subject, Function]
+  arguments: [Spinner, Subject, function]
   suppliedArguments: [spinner, selected, toString]
   template:
     pattern: '~this~.pipe(showInSelect(~0~, ~1~, ~2~))'
@@ -182,18 +182,19 @@
 
 - id: com.lightningkite.rx.android.showIn
   type: call
-  arguments: [AutoCompleteTextView, Subject, Function]
+  arguments: [AutoCompleteTextView, '*']
   suppliedArguments: [autoCompleteTextView, onItemSelected]
   template:
-    pattern: '~this~.pipe(showInInput(~0~, ~1~))'
+    pattern: '~this~.pipe(showInInput(~*~))'
     imports:
       showInInput: rxjs-plus
 
 - id: com.lightningkite.rx.android.showIn
   type: call
-  arguments: [AutoCompleteTextView, Subject, Function]
+  arguments: [AutoCompleteTextView, '*', '*']
+  suppliedArguments: [autoCompleteTextView, onItemSelected]
   template:
-    pattern: '~this~.pipe(showInInput(~0~, ~1~, ~2~))'
+    pattern: '~this~.pipe(showInInput(~*~))'
     imports:
       showInInput: rxjs-plus
 

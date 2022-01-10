@@ -1,0 +1,105 @@
+
+- type: "type"
+  id: "com.lightningkite.rx.android.resources.ViewString"
+  template: "string"
+
+- type: "call"
+  id: "com.lightningkite.rx.android.resources.ViewString.get"
+  template: "~this~"
+
+- type: "type"
+  id: "com.lightningkite.rx.android.resources.ViewStringRaw"
+  template: "string"
+
+- type: "call"
+  id: "com.lightningkite.rx.android.resources.ViewStringRaw"
+  template: "~string~"
+
+- type: "get"
+  id: "com.lightningkite.rx.android.resources.ViewStringRaw.string"
+  template: "~this~"
+
+- type: "type"
+  id: "com.lightningkite.rx.android.resources.ViewStringResource"
+  template: "string"
+
+- type: "call"
+  id: "com.lightningkite.rx.android.resources.ViewStringResource"
+  template: "~resource~"
+
+- type: "get"
+  id: "com.lightningkite.rx.android.resources.ViewStringResource.resource"
+  template: "~this~"
+
+- type: "type"
+  id: "com.lightningkite.rx.android.resources.ViewStringTemplate"
+  template: "string"
+
+- type: "call"
+  id: "com.lightningkite.rx.android.resources.ViewStringTemplate"
+  template:
+    pattern: vsprintf(~this~, ~arguments~)
+    imports:
+      vsprintf: sprintf-js
+
+- type: "type"
+  id: "com.lightningkite.rx.android.resources.ViewStringComplex"
+  template: "string"
+
+- type: "call"
+  id: "com.lightningkite.rx.android.resources.ViewStringComplex"
+  template: "(~getter~)()"
+
+- type: "type"
+  id: "com.lightningkite.rx.android.resources.ViewStringList"
+  template: "string"
+
+- type: "call"
+  id: "com.lightningkite.rx.android.resources.ViewStringList"
+  template: "~parts~.join(~separator~)"
+
+- type: "call"
+  id: "com.lightningkite.rx.android.resources.joinToViewString"
+  receiver: "kotlin.collections.List"
+  suppliedArguments: [separator]
+  template: "~parts~.join(~separator~)"
+
+- type: "call"
+  id: "com.lightningkite.rx.android.resources.ViewStringList"
+  suppliedArguments: [separator]
+  template: "~parts~.join(', ')"
+
+- type: "call"
+  id: "com.lightningkite.rx.android.resources.joinToViewString"
+  receiver: "kotlin.collections.List"
+  template: "~this~.join(', ')"
+
+- type: "call"
+  id: "com.lightningkite.rx.android.resources.toDebugString"
+  receiver: "com.lightningkite.rx.android.resources.ViewString"
+  template: "~this~"
+
+- type: "call"
+  id: "com.lightningkite.rx.android.resources.ViewString.get"
+  template: "~this~"
+
+- type: "call"
+  id: "com.lightningkite.rx.viewgenerators.get"
+  receiver: "com.lightningkite.rx.android.resources.ViewString"
+  template: "~this~"
+
+- type: call
+  id: com.lightningkite.rx.viewgenerators.getColor
+  template: ~0~
+
+- type: call
+  id: com.lightningkite.rx.viewgenerators.getString
+  template: ~0~
+
+- id: com.lightningkite.rx.android.StringResource
+  type: type
+  template: 'string'
+
+- id: com.lightningkite.rx.android.ColorResource
+  type: type
+  template: 'string'

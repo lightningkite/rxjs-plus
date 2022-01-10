@@ -5,7 +5,7 @@
     imports:
       HttpBody: rxjs-plus
 
-- id: com.lightningkite.rxplus.net.HttpResponse
+- id: com.lightningkite.rx.okhttp.HttpResponse
   type: type
   template: Response
 
@@ -23,6 +23,119 @@
     pattern: TimeoutError
     imports:
       TimeoutError: rxjs
+
+- id: com.lightningkite.rx.okhttp.discard
+  type: call
+  receiver: Single
+  template:
+    pattern: '~this~.pipe(unsuccessfulAsError, switchMap(x => x.text().then(x => undefined)))'
+    imports:
+      switchMap: rxjs
+      unsuccessfulAsError: rxjs-plus
+
+- id: com.lightningkite.rx.okhttp.discard
+  type: call
+  receiver: Response
+  template:
+    pattern: 'from(~this~.text()).pipe(map(x => undefined))'
+    imports:
+      from: rxjs
+      map: rxjs
+
+- id: com.lightningkite.rx.okhttp.readText
+  type: call
+  receiver: Single
+  template:
+    pattern: '~this~.pipe(unsuccessfulAsError, switchMap(x => x.text()))'
+    imports:
+      switchMap: rxjs
+      unsuccessfulAsError: rxjs-plus
+
+- id: com.lightningkite.rx.okhttp.readText
+  type: call
+  receiver: Response
+  template:
+    pattern: 'from(~this~.text())'
+    imports:
+      from: rxjs
+      map: rxjs
+
+- id: com.lightningkite.rx.okhttp.readByteArray
+  type: call
+  receiver: Single
+  template:
+    pattern: '~this~.pipe(unsuccessfulAsError, switchMap(x => x.blob()))'
+    imports:
+      switchMap: rxjs
+      unsuccessfulAsError: rxjs-plus
+
+- id: com.lightningkite.rx.okhttp.readByteArray
+  type: call
+  receiver: Response
+  template:
+    pattern: 'from(~this~.blob())'
+    imports:
+      from: rxjs
+      map: rxjs
+
+- id: com.lightningkite.rx.okhttp.readJson
+  type: call
+  receiver: Single
+  debug: true
+  template:
+    pattern: '~this~.pipe(unsuccessfulAsError, fromJSON<~T0~>(~R0~))'
+    imports:
+      fromJSON: rxjs-plus
+      unsuccessfulAsError: rxjs-plus
+
+- id: com.lightningkite.rx.okhttp.readJson
+  type: call
+  receiver: Response
+  debug: true
+  template:
+    pattern: 'of(~this~).pipe(fromJSON<~T0~>(~R0~))'
+    imports:
+      of: rxjs
+      fromJSON: rxjs-plus
+
+- id: com.lightningkite.rx.okhttp.readJsonDebug
+  type: call
+  receiver: Single
+  template:
+    pattern: '~this~.pipe(unsuccessfulAsError, fromJSON<~T0~>(~R0~))'
+    imports:
+      fromJSON: rxjs-plus
+      unsuccessfulAsError: rxjs-plus
+
+- id: com.lightningkite.rx.okhttp.readJsonDebug
+  type: call
+  receiver: Response
+  template:
+    pattern: 'of(~this~).pipe(fromJSON<~T0~>(~R0~))'
+    imports:
+      of: rxjs
+      fromJSON: rxjs-plus
+
+- id: com.lightningkite.rx.okhttp.HttpProgress.approximate
+  type: get
+  template:
+    pattern: 'approximateProgress(~this~)'
+    imports:
+      approximateProgress: rxjs-plus
+
+- id: com.lightningkite.rx.okhttp.WebSocketFrame
+  type: call
+  template: "{ binary: ~binary~, text: ~text~ }"
+
+- id: com.lightningkite.rx.okhttp.WebSocketFrame
+  type: call
+  suppliedArguments: ['binary']
+  template: "{ binary: ~binary~ }"
+
+- id: com.lightningkite.rx.okhttp.WebSocketFrame
+  type: call
+  suppliedArguments: ['text']
+  template: "{ text: ~text~ }"
 
 - id: com.lightningkite.rx.okhttp.HttpCacheMode.Default
   type: get
@@ -42,3 +155,7 @@
 - id: com.lightningkite.rx.okhttp.HttpCacheMode.OnlyIfCached
   type: get
   template: '"only-if-cached"'
+
+- id: com.lightningkite.rx.okhttp.WebSocketFrame
+  type: call
+  template: "{ binary: ~binary~, text: ~text~ }"
