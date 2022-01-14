@@ -4,8 +4,8 @@ import {
     mergeMap,
     MonoTypeOperatorFunction,
     Observable,
-    Observer, OperatorFunction,
-    SchedulerLike, Subject, switchMap,
+    Observer, OperatorFunction, pipe,
+    SchedulerLike, shareReplay, Subject, switchMap,
     timeout,
     Unsubscribable, using
 } from "rxjs";
@@ -132,7 +132,7 @@ export class HttpClient {
             phase: HttpPhase.Done,
             ratio: 1,
             response: x
-        })))
+        })), shareReplay(1))
     }
 
     webSocket(url: string): Observable<ConnectedWebSocket>{
@@ -227,6 +227,10 @@ export class ConnectedWebSocket implements Observer<WebSocketFrame>, WebSocketIn
 
 export function parse<TYPE>(item: any, asType: Array<any>): TYPE {
     const parser = asType[0].fromJSON as (item: any, typeArguments: Array<any>) => any
+    if(typeof parser !== "function"){
+        console.log(asType[0])
+        throw Error(`Type ${asType[0]} has no function fromJSON!`)
+    }
     return parser(item, asType.slice(1))
 }
 
@@ -243,7 +247,7 @@ export function parseUntyped(json: string): any {
 (String as any).fromJSON = (value: any) => value;
 (Number as any).fromJSON = (value: any) => typeof value === "string" ? parseFloat(value) : value;
 (Boolean as any).fromJSON = (value: any) => typeof value === "string" ? value === "true" : value;
-(Array as any).fromJSON = (value: any, typeArguments: Array<any>) => { return (value as Array<any>).map(x => parse(x, [typeArguments[0]])) };
+(Array as any).fromJSON = (value: any, typeArguments: Array<any>) => { return (value as Array<any>).map(x => parse(x, typeArguments[0])) };
 (Map as any).fromJSON = (value: any, typeArguments: Array<any>) => {
     let asObj = value as object;
     let map = new Map<any, any>();
@@ -262,10 +266,5 @@ export function parseUntyped(json: string): any {
 (Map as any).toJSON = (value: Map<any, any>) => Object.fromEntries(value);
 
 export function fromJSON<TYPE>(type: Array<any>): OperatorFunction<Response, TYPE> {
-    return (response: Observable<Response>) => response.pipe(switchMap(Response.prototype.json), map(x => parse<TYPE>(x, type)))
-}
-
-function asdfasdf(response: Response){
-    HttpClient.INSTANCE.call('https://test.com', HttpClient.INSTANCE.GET).pipe(fromJSON<Array<number>>([Array, [Number]]))
-    response.blob()
+    return pipe(switchMap(x => from(x.json())), map(x => parse<TYPE>(x, type)), shareReplay(1))
 }

@@ -159,3 +159,11 @@
 - id: com.lightningkite.rx.okhttp.WebSocketFrame
   type: call
   template: "{ binary: ~binary~, text: ~text~ }"
+
+- id: com.lightningkite.rx.okhttp.toRequestBody
+  receiver: Image
+  type: call
+  template:
+    pattern: imageToBody(~this~, ~*~)
+    imports:
+      imageToBody: rxjs-plus

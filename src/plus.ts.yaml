@@ -324,3 +324,24 @@
     pattern: '~this~.pipe(setOnWhileActive(~0~))'
     imports:
       setOnWhileActive: rxjs-plus
+
+- id: com.lightningkite.rx.toSubjectLocalDate
+  type: call
+  template:
+    pattern: '~this~.pipe(mapSubjectWithExisting(x => x.toLocalDate(), (a, b) => a.with(b)))'
+    imports:
+      mapSubjectWithExisting: rxjs-plus
+
+- id: com.lightningkite.rx.toSubjectLocalTime
+  type: call
+  template:
+    pattern: '~this~.pipe(mapSubjectWithExisting(x => x.toLocalTime(), (a, b) => a.with(b)))'
+    imports:
+      mapSubjectWithExisting: rxjs-plus
+
+- id: com.lightningkite.rx.toSubjectLocalDateTime
+  type: call
+  template:
+    pattern: '~this~.pipe(mapSubjectWithExisting(x => x.toLocalDateTime(), (a, b) => a.with(b)))'
+    imports:
+      mapSubjectWithExisting: rxjs-plus

@@ -10,6 +10,7 @@ import {map, of, take} from "rxjs";
 export class SelectVG implements ViewGenerator {
     private stack: HasValueSubject<Array<ViewGenerator>>
 
+    readonly titleString: string = "Select Demo"
     constructor(stack: HasValueSubject<Array<ViewGenerator>>) {
         this.stack = stack
     }
@@ -22,7 +23,7 @@ export class SelectVG implements ViewGenerator {
         ["Bind Test", () => new BindTestVG()],
     ])
 
-    generate(): HTMLElement {
+    generate(window: Window): HTMLElement {
         return (<div>
             <h1>Select a demo</h1>
             <div>

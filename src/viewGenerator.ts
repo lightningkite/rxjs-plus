@@ -1,13 +1,13 @@
 import {HasValueSubject} from "./plus";
 import {v4 as uuidv4} from 'uuid';
 import {BehaviorSubject, bindCallback, MonoTypeOperatorFunction, Observable, Subject} from "rxjs";
-import {subscribeAutoDispose} from "./binding";
+import {subscribeAutoDispose, swapViewSwap} from "./binding";
 
 export type StackSubject<T> = BehaviorSubject<Array<T>>
 export type ViewGeneratorStack = StackSubject<ViewGenerator>
 
 export interface ViewGenerator {
-    readonly titleString?: string
+    readonly titleString: string
 
     generate(dependency: Window): HTMLElement
 }
@@ -27,7 +27,7 @@ export interface HasBackAction {
 }
 
 export namespace HasBackActionDefaults {
-    export function onBackPressed(): boolean { return false }
+    export function onBackPressed(this_: HasBackAction): boolean { return false }
 }
 
 export interface EntryPoint extends HasBackAction {
@@ -58,8 +58,7 @@ export interface Address {
     countryCode?: string
 }
 
-export var xActivityAccessGeocode: (
-    this_Geocode: Window,
+export var geocode: (
     latitudeOrAddress: number | string,
     longitude?: number
 ) => Observable<Array<Address>> = () => {
@@ -67,8 +66,7 @@ export var xActivityAccessGeocode: (
 }
 
 
-export function xActivityAccessRequestLocation(
-    this_RequestLocation: Window,
+export function requestLocation(
     accuracyBetterThanMeters: number = 10.0
 ): Observable<GeolocationCoordinates> {
     return new Observable(subscriber => {
@@ -127,14 +125,14 @@ export function openFile(type: string, capture: boolean | null = null): Observab
     })
 }
 
-export function xActivityAccessDownloadFile(this_: Window, url: string) {
+export function downloadFile(url: string) {
     const a = document.createElement("a") as HTMLAnchorElement
     a.href = url
     a.download = ""
     a.click()
 }
 
-export function xActivityAccessDownloadFileData(this_: Window, data: Int8Array, name: string, type: string) {
+export function downloadFileData(data: Int8Array, name: string, type: string) {
     const a = document.createElement("a") as HTMLAnchorElement
     a.href = URL.createObjectURL(new Blob([data], {
         type: type
@@ -143,12 +141,12 @@ export function xActivityAccessDownloadFileData(this_: Window, data: Int8Array, 
     a.click()
 }
 
-export function xActivityAccessGetColor(this_: Window, variableName: string): string {
+export function getColor(variableName: string): string {
     if (!variableName.startsWith("var(")) return variableName;
-    return this_.getComputedStyle(this_.document.body).getPropertyValue(variableName.slice(4, variableName.length - 1)).trim();
+    return getComputedStyle(document.body).getPropertyValue(variableName.slice(4, variableName.length - 1)).trim();
 }
 
-export function xActivityAccessOpenEvent(this_: Window, title: string, description: string, location: string, start: Date, end: Date): void {
+export function openEvent(title: string, description: string, location: string, start: Date, end: Date): void {
     let calText = "BEGIN:VCALENDAR\nVERSION:2.0\nCALSCALE:GREGORIAN\nPRODID:adamgibbons/ics\nMETHOD:PUBLISH\nBEGIN:VEVENT\n";
     calText += "UID:" + uuidv4() + "\n";
     calText += "SUMMARY:" + title + "\n";
@@ -232,8 +230,7 @@ showDialogEvent.subscribe({
     }
 });
 
-export function xActivityAccessShare(
-    this_: Window,
+export function share(
     shareTitle: string,
     message: (string | null) = null,
     url: (string | null) = null,
@@ -421,59 +418,9 @@ export function xStackReset<T>(self: HasValueSubject<Array<T>>, value: T) {
     self.next([value])
 }
 
-export function swapViewSwap(view: HTMLDivElement, from: HTMLElement | null, to: HTMLElement | null, animation: string) {
-    if(to){
-        to.style.width = "100%";
-        to.style.height = "100%";
-    }
-    const current = from
-    if(to === current) {
-        if(!to) {
-            view.hidden = true;
-            view.innerHTML = "";
-        }
-        return;
-    }
-    if (current) {
-        //animate out
-        const animationOut = `${animation}-out`
-        window.setTimeout(()=>{
-            try {
-                view.removeChild(current);
-            } catch(e){
-                /*squish*/
-            }
-        }, 250)
-        current.style.animation = `${animationOut} 0.25s`
-
-        //animate in
-        if (to) {
-            view.hidden = false;
-            const animationIn = `${animation}-in`
-            let animInHandler: (ev: AnimationEvent) => void;
-            animInHandler = (ev) => {
-                to.onanimationend = null;
-                to.style.removeProperty("animation");
-            }
-            to.addEventListener("animationend", animInHandler)
-            to.style.animation = `${animationIn} 0.25s` //Delay seems to make this work right
-            view.appendChild(to);
-        } else {
-            view.hidden = true;
-            view.innerHTML = "";
-        }
-    } else if (to) {
-        view.appendChild(to);
-        view.hidden = false;
-    } else {
-        view.hidden = true;
-        view.innerHTML = "";
-    }
-}
-
 export function showInSwap<T extends ViewGenerator>(
     parent: HTMLDivElement,
-    cssAnimationPrefix: string = "stack-"
+    cssAnimationPrefix: string = "stack"
 ): MonoTypeOperatorFunction<Array<T>> {
     let current: HTMLElement | null = null
     let previousStackSize = 0;
@@ -486,6 +433,7 @@ export function showInSwap<T extends ViewGenerator>(
         } else if (newStackSize < previousStackSize) {
             animation = `${cssAnimationPrefix}-pop`
         }
+        previousStackSize = newStackSize
         swapViewSwap(parent, current, next, animation)
         current = next
     })

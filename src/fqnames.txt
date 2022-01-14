@@ -11,7 +11,15 @@ com.lightningkite.rx.okhttp.HttpResponseException
 com.lightningkite.rx.okhttp.WebSocketFrame
 com.lightningkite.rx.okhttp.WebSocketInterface
 com.lightningkite.rx.HasValueSubject
-
+com.lightningkite.rx.android.resources.Image
+com.lightningkite.rx.android.resources.ImageReference
+com.lightningkite.rx.android.resources.ImageImageBitmap
+com.lightningkite.rx.android.resources.ImageRaw
+com.lightningkite.rx.android.resources.ImageRemoteUrl
+com.lightningkite.rx.android.resources.ImageResource
+com.lightningkite.rx.android.resources.Video
+com.lightningkite.rx.android.resources.VideoReference
+com.lightningkite.rx.android.resources.VideoRemoteUrl
 com.lightningkite.rx.viewgenerators.AccessibleActivity
 com.lightningkite.rx.viewgenerators
 com.lightningkite.rx.viewgenerators.geocode

@@ -20,7 +20,12 @@ import {
     switchMap,
     MonoTypeOperatorFunction, finalize, defer, SubscriptionLike
 } from "rxjs";
-import {not, or, plusNumber, ReversibleFunction} from "./operatorReferenceShorthand";
+import {
+    not,
+    or,
+    plusNumber,
+    ReversibleFunction
+} from "./operatorReferenceShorthand";
 
 export interface HasValueSubject<T> extends Subject<T> {
     get value(): T;
@@ -97,8 +102,8 @@ export function observerMapMaybeWrite<T, R>(observer: Observer<T>, unproject: (v
     }
 }
 
-export function mapReversible<T>(reversible: ReversibleFunction<T>): UnaryFunction<Subject<T>, Subject<T>> {
-    return subject => new AnonymousSubject<T>(observerMap(subject, reversible.reverse()), subject.pipe(map(reversible)))
+export function mapReversible<A, B>(reversible: ReversibleFunction<A, B>): UnaryFunction<Subject<A>, Subject<B>> {
+    return subject => new AnonymousSubject<B>(observerMap(subject, reversible.reverse()), subject.pipe(map(reversible)))
 }
 export function mapSubject<T, R>(project: (value: T) => R, unproject: (value: R) => T): UnaryFunction<Subject<T>, Subject<R>> {
     return subject => new AnonymousSubject<R>(observerMap(subject, unproject), subject.pipe(map(project)))
@@ -234,9 +239,10 @@ export function mapCall<
 }
 
 
-// export function receiverToArgument<F extends (...args: any) => any>(someFunction: F): (receiver: ThisParameterType<F>, ...params: Parameters<F>) => ReturnType<F> {
-//     return (first, ...args) => someFunction.call(first, args)
-// }
+export function receiverToArgument<F extends (...args: any) => any>(someFunction: F): (receiver: ThisParameterType<F>, ...params: Parameters<F>) => ReturnType<F> {
+    return (first, ...args) => someFunction.call(first, args)
+}
+
 
 export function mergeMapNotNull<T, O extends ObservableInput<any>>(
     project: (value: T, index: number) => O | null,
@@ -305,4 +311,5 @@ function test() {
     of(true).pipe(combineLatestWith(of(false)), mapCall(or))
 
     combineLatest([of(1), of(2)])
+
 }

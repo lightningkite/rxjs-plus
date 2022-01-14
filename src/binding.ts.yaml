@@ -116,6 +116,23 @@
 
 - id: com.lightningkite.rx.android.bind
   type: call
+  arguments: [RatingBar]
+  template:
+    pattern: '~this~.pipe(bind(~0~, "valueAsNumber", "input"))'
+    imports:
+      bind: rxjs-plus
+
+- id: com.lightningkite.rx.android.bind
+  type: call
+  receiver: Subject<Optional<LocalTime>>
+  arguments: [Button]
+  template:
+    pattern: '~this~.pipe(bind(~0~, "valueAsNumber", "input"))'
+    imports:
+      bind: rxjs-plus
+
+- id: com.lightningkite.rx.android.bind
+  type: call
   arguments: [CompoundButton]
   template:
     pattern: '~this~.pipe(bind(~0~, "checked", "input"))'
@@ -198,6 +215,24 @@
     imports:
       showInInput: rxjs-plus
 
+- id: com.lightningkite.rx.android.showIn
+  type: call
+  arguments: [ViewPager, Subject, function]
+  template:
+    pattern: '~this~.pipe(showInPager(~0~, ~1~, ~2~))'
+    imports:
+      showInPager: rxjs-plus
+
+- id: com.lightningkite.rx.android.showIn
+  type: call
+  receiver: List
+  arguments: [ViewPager, Subject, function]
+  template:
+    pattern: 'of(~this~).pipe(showInPager(~0~, ~1~, ~2~))'
+    imports:
+      of: rxjs
+      showInPager: rxjs-plus
+
 - id: com.lightningkite.rx.android.StringResource
   type: type
   template: string
@@ -209,3 +244,96 @@
 - id: com.lightningkite.rx.android.DrawableResource
   type: type
   template: string
+
+- id: com.lightningkite.rx.android.showLoading
+  type: call
+  template:
+    pattern: ~this~.pipe(subscribeAutoDispose(~0~, hasClass("loading")))
+    imports:
+      subscribeAutoDispose: rxjs-plus
+      hasClass: rxjs-plus
+
+
+- id: com.lightningkite.rx.android.bind
+  receiver: Subject<Optional<LocalDate>>
+  type: call
+  template:
+    pattern: '~this~.pipe(mapSubject(x => x ? convert(x).toDate() : null, x => LocalDate.from(nativeJs(x))), subscribeAutoDispose(~0~, buttonDate("date", ~2~)))'
+    imports:
+      nativeJs: '@js-joda/core'
+      convert: '@js-joda/core'
+      LocalDate: '@js-joda/core'
+      mapSubject: rxjs-plus
+      subscribeAutoDispose: rxjs-plus
+      buttonDate: rxjs-plus
+
+- id: com.lightningkite.rx.android.bind
+  receiver: Subject<LocalDate>
+  type: call
+  template:
+    pattern: '~this~.pipe(mapSubject(x => convert(x).toDate(), x => LocalDate.from(nativeJs(x))), subscribeAutoDispose(~0~, buttonDate("date")))'
+    imports:
+      nativeJs: '@js-joda/core'
+      convert: '@js-joda/core'
+      LocalDate: '@js-joda/core'
+      mapSubject: rxjs-plus
+      subscribeAutoDispose: rxjs-plus
+      buttonDate: rxjs-plus
+
+
+- id: com.lightningkite.rx.android.bind
+  receiver: Subject<Optional<LocalTime>>
+  type: call
+  template:
+    pattern: '~this~.pipe(mapSubject(x => x ? convert(LocalDateTime.of(LocalDate.now(), x)).toDate() : null, x => LocalTime.from(nativeJs(x))), subscribeAutoDispose(~0~, buttonDate("time", ~2~)))'
+    imports:
+      nativeJs: '@js-joda/core'
+      convert: '@js-joda/core'
+      LocalTime: '@js-joda/core'
+      LocalDateTime: '@js-joda/core'
+      LocalDate: '@js-joda/core'
+      mapSubject: rxjs-plus
+      subscribeAutoDispose: rxjs-plus
+      buttonDate: rxjs-plus
+
+- id: com.lightningkite.rx.android.bind
+  receiver: Subject<LocalTime>
+  type: call
+  template:
+    pattern: '~this~.pipe(mapSubject(x => convert(LocalDateTime.of(LocalDate.now(), x)).toDate(), x => LocalTime.from(nativeJs(x))), subscribeAutoDispose(~0~, buttonDate("time")))'
+    imports:
+      nativeJs: '@js-joda/core'
+      convert: '@js-joda/core'
+      LocalTime: '@js-joda/core'
+      LocalDateTime: '@js-joda/core'
+      LocalDate: '@js-joda/core'
+      mapSubject: rxjs-plus
+      subscribeAutoDispose: rxjs-plus
+      buttonDate: rxjs-plus
+
+
+- id: com.lightningkite.rx.android.bind
+  receiver: Subject<Optional<LocalDateTime>>
+  type: call
+  template:
+    pattern: '~this~.pipe(mapSubject(x => x ? convert(x).toDate() : null, x => LocalDateTime.from(nativeJs(x))), subscribeAutoDispose(~0~, buttonDate("datetime-local", ~2~)))'
+    imports:
+      nativeJs: '@js-joda/core'
+      convert: '@js-joda/core'
+      LocalDateTime: '@js-joda/core'
+      mapSubject: rxjs-plus
+      subscribeAutoDispose: rxjs-plus
+      buttonDate: rxjs-plus
+
+- id: com.lightningkite.rx.android.bind
+  receiver: Subject<LocalDateTime>
+  type: call
+  template:
+    pattern: '~this~.pipe(mapSubject(x => convert(x).toDate(), x => LocalDateTime.from(nativeJs(x))), subscribeAutoDispose(~0~, buttonDate("datetime-local")))'
+    imports:
+      nativeJs: '@js-joda/core'
+      convert: '@js-joda/core'
+      LocalDateTime: '@js-joda/core'
+      mapSubject: rxjs-plus
+      subscribeAutoDispose: rxjs-plus
+      buttonDate: rxjs-plus

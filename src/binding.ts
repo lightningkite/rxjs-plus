@@ -1,5 +1,5 @@
 import {
-    BehaviorSubject, from, fromEvent,
+    BehaviorSubject, combineLatest, from, fromEvent,
     map, mergeMap,
     MonoTypeOperatorFunction,
     Observable, Observer,
@@ -26,6 +26,17 @@ export interface VirtualProperty<RECEIVER, T> {
 
 export interface VirtualMutableProperty<RECEIVER, T> extends VirtualProperty<RECEIVER, T> {
     set(receiver: RECEIVER, value: T): any
+}
+
+export function hasClass(className: string): VirtualMutableProperty<HTMLElement, boolean> {
+    return {
+        get(receiver: HTMLElement): boolean {
+            return receiver.classList.contains(className)
+        },
+        set(receiver: HTMLElement, value: boolean) {
+            if (value) receiver.classList.add(className); else receiver.classList.remove(className)
+        }
+    }
 }
 
 export class CompositeDisposable implements Unsubscribable {
@@ -193,11 +204,60 @@ export function showIn<T>(
     }
 }
 
+export function showInTyped<T>(
+    parent: HTMLElement,
+    determineType: (t: T) => number,
+    makeChild: (type: number, prop: Observable<T>) => HTMLElement
+): MonoTypeOperatorFunction<Array<T>> {
+    return obs => {
+        const children: Array<[HTMLElement, BehaviorSubject<T>, number]> = []
+
+        function makeView(type: number, value: T): [HTMLElement, BehaviorSubject<T>, number] {
+            const prop = new BehaviorSubject(value)
+            const view = makeChild(type, prop)
+            return [view, prop, type]
+        }
+
+        elementRemoved(parent).parts.push(obs.subscribe(value => {
+            const min = Math.min(children.length, value.length)
+            for (let i = 0; i < min; i++) {
+                const element = value[i]
+                const type = determineType(element)
+                if (type == children[i][2]) {
+                    children[i][1].next(element)
+                } else {
+                    const newThing = makeView(type, element)
+                    parent.replaceChild(children[i][0], newThing[0])
+                    children[i] = newThing
+                }
+            }
+            for (let i = value.length; i < children.length; i++) {
+                const old = children[i]
+                parent.removeChild(old[0])
+            }
+            children.splice(value.length, children.length - value.length)
+            for (let i = children.length; i < value.length; i++) {
+                const element = value[i]
+                const type = determineType(element)
+                const newThing = makeView(type, element)
+                parent.appendChild(newThing[0])
+                children.push(newThing)
+            }
+        }))
+        return obs
+    }
+}
+
+
 export function showInSelect<T>(select: HTMLSelectElement, selected: Subject<T>, toString: (item: T) => string = x => `${x}`): MonoTypeOperatorFunction<Array<T>> {
     return obs => {
         let lastKnownArray: Array<T> = []
         obs.pipe(
-            tap({ next(value) { lastKnownArray = value } }),
+            tap({
+                next(value) {
+                    lastKnownArray = value
+                }
+            }),
             showIn(select, prop => {
                 const option = document.createElement("option")
                 prop.pipe(
@@ -218,11 +278,16 @@ export function showInSelect<T>(select: HTMLSelectElement, selected: Subject<T>,
         return obs
     }
 }
+
 export function showInInput<T>(input: HTMLInputElement, selected: ((item: T) => void) | Observer<T>, toString: (item: T) => string = x => `${x}`): MonoTypeOperatorFunction<Array<T>> {
     return obs => {
         let lastKnownArray: Array<T> = []
         obs.pipe(
-            tap({ next(value) { lastKnownArray = value } }),
+            tap({
+                next(value) {
+                    lastKnownArray = value
+                }
+            }),
             showIn(makeDatalistForElement(input), prop => {
                 const option = document.createElement("option")
                 prop.pipe(
@@ -235,8 +300,8 @@ export function showInInput<T>(input: HTMLInputElement, selected: ((item: T) => 
         )
         input.addEventListener("input", ev => {
             const index = lastKnownArray.findIndex(x => toString(x) === input.value)
-            if(index !== -1) {
-                if(typeof selected === 'function')
+            if (index !== -1) {
+                if (typeof selected === 'function')
                     selected(lastKnownArray[index])
                 else
                     selected.next(lastKnownArray[index])
@@ -245,20 +310,47 @@ export function showInInput<T>(input: HTMLInputElement, selected: ((item: T) => 
         return obs
     }
 }
+
 export function makeDatalistForElement(element: HTMLElement): HTMLDataListElement {
     const datalist = document.createElement("datalist")
-    elementRemoved(element).parts.push(new DisposableLambda(() =>{
+    elementRemoved(element).parts.push(new DisposableLambda(() => {
         datalist.remove()
     }))
     return datalist
 }
 
-export function showInTyped<T>(
-    parent: HTMLElement,
-    determineType: (t: T) => number,
-    makeChild: (type: number, prop: Observable<T>) => HTMLElement
+export function showInPager<T>(
+    element: { previous: HTMLElement, next: HTMLElement, container: HTMLElement },
+    selectedIndex: Subject<number> = new BehaviorSubject(0),
+    makeView: (t: T) => HTMLElement
 ): MonoTypeOperatorFunction<Array<T>> {
-    throw Error("TODO")
+    let pastIndex = 0
+    let current: HTMLElement | null = null
+    return obs => {
+        const obsWithIndex = combineLatest([obs, selectedIndex])
+        obsWithIndex.pipe(
+            map(([list, index]) => [list[index], index] as [T, number]),
+            subscribeAutoDispose(element.container, (container, [value, index]) => {
+                const newView = makeView(value)
+                swapViewSwap(container, current, newView,
+                    index > pastIndex ? 'stack-push'
+                        : index < pastIndex ? 'stack-pop'
+                            : 'stack-fade'
+                )
+                current = newView
+                pastIndex = index
+            })
+        )
+        onThrottledEventDoWith(element.previous, "click", selectedIndex, x => {
+            const n = Math.max(0, x - 1)
+            if(n != x) selectedIndex.next(n)
+        })
+        onThrottledEventDoWith(element.next, "click", obsWithIndex, x => {
+            const n = Math.min(x[0].length - 1, x[1] + 1)
+            if(n != x[1]) selectedIndex.next(n)
+        })
+        return obs
+    }
 }
 
 export function onThrottledEventDo<T>(element: HTMLElement, eventName: string, action: () => void) {
@@ -287,5 +379,80 @@ export const viewExists: VirtualMutableProperty<HTMLElement, boolean> = {
     },
     set(receiver: HTMLElement, value: boolean): any {
         receiver.hidden = !value
+    }
+}
+
+export function buttonDate(type: HTMLInputElement["type"]): VirtualMutableProperty<HTMLElement, Date> & { getInput(receiver: HTMLElement): HTMLInputElement }
+export function buttonDate(type: HTMLInputElement["type"], defaultText: string): VirtualMutableProperty<HTMLElement, Date | null> & { getInput(receiver: HTMLElement): HTMLInputElement }
+export function buttonDate(type: HTMLInputElement["type"], defaultText?: string): VirtualMutableProperty<HTMLElement, Date | null> & { getInput(receiver: HTMLElement): HTMLInputElement } {
+    return {
+        getInput(receiver: HTMLElement): HTMLInputElement {
+            const existing = receiver.getElementsByTagName("input")[0]
+            if (existing) return existing
+            const made = document.createElement("input")
+            made.type = type
+            receiver.appendChild(made)
+            return made
+        },
+        get(receiver: HTMLElement): Date | null {
+            return this.getInput(receiver).valueAsDate
+        },
+        set(receiver: HTMLElement, value: Date | null): any {
+            if (value === null) {
+                receiver.textContent = defaultText ?? ""
+            } else {
+                this.getInput(receiver).valueAsDate = value
+            }
+        }
+    }
+}
+
+export function swapViewSwap(view: HTMLElement, from: HTMLElement | null, to: HTMLElement | null, animation: string) {
+    if (to) {
+        to.style.width = "100%";
+        to.style.height = "100%";
+    }
+    const current = from
+    if (to === current) {
+        if (!to) {
+            view.hidden = true;
+            view.innerHTML = "";
+        }
+        return;
+    }
+    if (current) {
+        //animate out
+        const animationOut = `${animation}-out`
+        window.setTimeout(() => {
+            try {
+                view.removeChild(current);
+            } catch (e) {
+                /*squish*/
+            }
+        }, 250)
+        current.style.animation = `${animationOut} 0.25s`
+
+        //animate in
+        if (to) {
+            view.hidden = false;
+            const animationIn = `${animation}-in`
+            let animInHandler: (ev: AnimationEvent) => void;
+            animInHandler = (ev) => {
+                to.onanimationend = null;
+                to.style.removeProperty("animation");
+            }
+            to.addEventListener("animationend", animInHandler)
+            to.style.animation = `${animationIn} 0.25s` //Delay seems to make this work right
+            view.appendChild(to);
+        } else {
+            view.hidden = true;
+            view.innerHTML = "";
+        }
+    } else if (to) {
+        view.appendChild(to);
+        view.hidden = false;
+    } else {
+        view.hidden = true;
+        view.innerHTML = "";
     }
 }
