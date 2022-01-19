@@ -95,7 +95,7 @@
   template:
     pattern: ~this~.pipe(retryWhenAlt(~0~))
     imports:
-      retryWhenAlt: @lightningkite/rxjs-plus
+      retryWhenAlt: '@lightningkite/rxjs-plus'
 
 - id: io.reactivex.rxjava3.core.Observable.delay
   type: call
@@ -291,14 +291,14 @@
   template:
     pattern: ~this~.pipe(doOnSubscribe(~0~))
     imports:
-      doOnSubscribe: @lightningkite/rxjs-plus
+      doOnSubscribe: '@lightningkite/rxjs-plus'
 
 - id: io.reactivex.rxjava3.core.Observable.doOnDispose
   type: call
   template:
     pattern: ~this~.pipe(doOnDispose(~0~))
     imports:
-      doOnDispose: @lightningkite/rxjs-plus
+      doOnDispose: '@lightningkite/rxjs-plus'
 
 - id: io.reactivex.rxjava3.core.Observable.doOnError
   type: call
@@ -369,7 +369,7 @@
   template:
     pattern: ~this~.pipe(autoconnect())
     imports:
-      autoconnect: @lightningkite/rxjs-plus
+      autoconnect: '@lightningkite/rxjs-plus'
 
 - id: io.reactivex.rxjava3.core.Observable.take
   type: call
@@ -459,7 +459,7 @@
   template:
     pattern: ~this~.subscribe(new SingleObserver(~0~))
     imports:
-      SingleObserver: @lightningkite/rxjs-plus
+      SingleObserver: '@lightningkite/rxjs-plus'
 
 - id: io.reactivex.rxjava3.kotlin.subscribeBy
   type: call
@@ -575,7 +575,7 @@
   template:
     pattern: doOnSubscribe(~this~, ~0~)
     imports:
-      doOnSubscribe: @lightningkite/rxjs-plus
+      doOnSubscribe: '@lightningkite/rxjs-plus'
 
 - id: io.reactivex.rxjava3.core.Single.doFinally
   type: call
@@ -663,7 +663,7 @@
   template:
     pattern: ~this~.subscribe(new MaybeObserver(~0~))
     imports:
-      MaybeObserver: @lightningkite/rxjs-plus
+      MaybeObserver: '@lightningkite/rxjs-plus'
 
 - id: io.reactivex.rxjava3.kotlin.subscribeBy
   type: call
@@ -779,7 +779,7 @@
   template:
     pattern: doOnSubscribe(~this~, ~0~)
     imports:
-      doOnSubscribe: @lightningkite/rxjs-plus
+      doOnSubscribe: '@lightningkite/rxjs-plus'
 
 - id: io.reactivex.rxjava3.core.Maybe.doFinally
   type: call

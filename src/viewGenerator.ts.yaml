@@ -229,48 +229,48 @@
   template:
     pattern: '~this~.pipe(showInSwap(~0~))'
     imports:
-      showInSwap: @lightningkite/rxjs-plus
+      showInSwap: '@lightningkite/rxjs-plus'
 
 - id: com.lightningkite.rx.viewgenerators.geocode
   type: call
   template:
     pattern: geocode(~*~)
     imports:
-      geocode: @lightningkite/rxjs-plus
+      geocode: '@lightningkite/rxjs-plus'
 - id: com.lightningkite.rx.viewgenerators.requestLocation
   type: call
   template:
     pattern: requestLocation(~*~)
     imports:
-      requestLocation: @lightningkite/rxjs-plus
+      requestLocation: '@lightningkite/rxjs-plus'
 - id: com.lightningkite.rx.viewgenerators.downloadFile
   type: call
   template:
     pattern: downloadFile(~*~)
     imports:
-      downloadFile: @lightningkite/rxjs-plus
+      downloadFile: '@lightningkite/rxjs-plus'
 - id: com.lightningkite.rx.viewgenerators.downloadFileData
   type: call
   template:
     pattern: downloadFileData(~*~)
     imports:
-      downloadFileData: @lightningkite/rxjs-plus
+      downloadFileData: '@lightningkite/rxjs-plus'
 - id: com.lightningkite.rx.viewgenerators.getColor
   type: call
   template:
     pattern: getColor(~*~)
     imports:
-      getColor: @lightningkite/rxjs-plus
+      getColor: '@lightningkite/rxjs-plus'
 - id: com.lightningkite.rx.viewgenerators.openEvent
   type: call
   template:
     pattern: openEvent(~0~, ~1~, ~2~, convert(~3~).toDate(), convert(~4~).toDate())
     imports:
-      openEvent: @lightningkite/rxjs-plus
+      openEvent: '@lightningkite/rxjs-plus'
       convert: '@js-joda/core'
 - id: com.lightningkite.rx.viewgenerators.share
   type: call
   template:
     pattern: share(~*~)
     imports:
-      share: @lightningkite/rxjs-plus
+      share: '@lightningkite/rxjs-plus'

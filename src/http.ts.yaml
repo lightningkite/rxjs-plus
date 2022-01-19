@@ -3,7 +3,7 @@
   template:
     pattern: HttpBody
     imports:
-      HttpBody: @lightningkite/rxjs-plus
+      HttpBody: '@lightningkite/rxjs-plus'
 
 - id: com.lightningkite.rx.okhttp.HttpResponse
   type: type
@@ -31,7 +31,7 @@
     pattern: '~this~.pipe(unsuccessfulAsError, switchMap(x => x.text().then(x => undefined)))'
     imports:
       switchMap: rxjs
-      unsuccessfulAsError: @lightningkite/rxjs-plus
+      unsuccessfulAsError: '@lightningkite/rxjs-plus'
 
 - id: com.lightningkite.rx.okhttp.discard
   type: call
@@ -49,7 +49,7 @@
     pattern: '~this~.pipe(unsuccessfulAsError, switchMap(x => x.text()))'
     imports:
       switchMap: rxjs
-      unsuccessfulAsError: @lightningkite/rxjs-plus
+      unsuccessfulAsError: '@lightningkite/rxjs-plus'
 
 - id: com.lightningkite.rx.okhttp.readText
   type: call
@@ -67,7 +67,7 @@
     pattern: '~this~.pipe(unsuccessfulAsError, switchMap(x => x.blob()))'
     imports:
       switchMap: rxjs
-      unsuccessfulAsError: @lightningkite/rxjs-plus
+      unsuccessfulAsError: '@lightningkite/rxjs-plus'
 
 - id: com.lightningkite.rx.okhttp.readByteArray
   type: call
@@ -85,8 +85,8 @@
   template:
     pattern: '~this~.pipe(unsuccessfulAsError, fromJSON<~T0~>(~R0~))'
     imports:
-      fromJSON: @lightningkite/rxjs-plus
-      unsuccessfulAsError: @lightningkite/rxjs-plus
+      fromJSON: '@lightningkite/rxjs-plus'
+      unsuccessfulAsError: '@lightningkite/rxjs-plus'
 
 - id: com.lightningkite.rx.okhttp.readJson
   type: call
@@ -96,7 +96,7 @@
     pattern: 'of(~this~).pipe(fromJSON<~T0~>(~R0~))'
     imports:
       of: rxjs
-      fromJSON: @lightningkite/rxjs-plus
+      fromJSON: '@lightningkite/rxjs-plus'
 
 - id: com.lightningkite.rx.okhttp.readJsonDebug
   type: call
@@ -104,8 +104,8 @@
   template:
     pattern: '~this~.pipe(unsuccessfulAsError, fromJSON<~T0~>(~R0~))'
     imports:
-      fromJSON: @lightningkite/rxjs-plus
-      unsuccessfulAsError: @lightningkite/rxjs-plus
+      fromJSON: '@lightningkite/rxjs-plus'
+      unsuccessfulAsError: '@lightningkite/rxjs-plus'
 
 - id: com.lightningkite.rx.okhttp.readJsonDebug
   type: call
@@ -114,14 +114,14 @@
     pattern: 'of(~this~).pipe(fromJSON<~T0~>(~R0~))'
     imports:
       of: rxjs
-      fromJSON: @lightningkite/rxjs-plus
+      fromJSON: '@lightningkite/rxjs-plus'
 
 - id: com.lightningkite.rx.okhttp.HttpProgress.approximate
   type: get
   template:
     pattern: 'approximateProgress(~this~)'
     imports:
-      approximateProgress: @lightningkite/rxjs-plus
+      approximateProgress: '@lightningkite/rxjs-plus'
 
 - id: com.lightningkite.rx.okhttp.WebSocketFrame
   type: call
@@ -166,4 +166,4 @@
   template:
     pattern: imageToBody(~this~, ~*~)
     imports:
-      imageToBody: @lightningkite/rxjs-plus
+      imageToBody: '@lightningkite/rxjs-plus'
