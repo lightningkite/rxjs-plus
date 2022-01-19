@@ -17,7 +17,7 @@ export interface WebSocketFrame {
 }
 
 export const unsuccessfulAsError: MonoTypeOperatorFunction<Response> = map(value => {
-    if(!value.ok) throw new HttpResponseException(value)
+    if (!value.ok) throw new HttpResponseException(value)
     return value
 })
 
@@ -33,6 +33,7 @@ export class HttpResponseException extends Error {
 export class HttpReadResponseException extends Error {
     public readonly response: Response;
     public readonly text: string;
+
     public constructor(response: Response, text: string) {
         super(`Got code ${response.status}`);
         this.response = response;
@@ -59,7 +60,7 @@ export interface HttpProgress<T> {
 }
 
 export function approximateProgress(progress: HttpProgress<any>): number {
-    switch(progress.phase) {
+    switch (progress.phase) {
         case HttpPhase.Connect:
             return 0
         case HttpPhase.Write:
@@ -98,7 +99,7 @@ export class HttpClient {
     //--- HttpClient.responseScheduler
     public responseScheduler: SchedulerLike | null = null
 
-    public defaultOptions: HttpOptions = { timeout: 30000, cacheMode: "default" };
+    public defaultOptions: HttpOptions = {timeout: 30000, cacheMode: "default"};
 
     call(
         url: string,
@@ -108,7 +109,7 @@ export class HttpClient {
         options: HttpOptions = this.defaultOptions
     ): Observable<Response> {
         let h = new Array(...headers.entries());
-        if(body !== null && body.type !== "multipart/form-data"){
+        if (body !== null && body.type !== "multipart/form-data") {
             h.push(["Content-Type", body.type]);
         }
         return from(fetch(url, {
@@ -135,22 +136,24 @@ export class HttpClient {
         })), shareReplay(1))
     }
 
-    webSocket(url: string): Observable<ConnectedWebSocket>{
+    webSocket(url: string): Observable<ConnectedWebSocket> {
         return using(
-            ()=> new ConnectedWebSocket(url),
+            () => new ConnectedWebSocket(url),
             (r) => (r as ConnectedWebSocket).ownConnection
         )
     }
 }
 
-export interface WebSocketInterface extends Observer<WebSocketFrame> {
+export interface WebSocketInterface {
+    readonly write: Observer<WebSocketFrame>
     readonly read: Observable<WebSocketFrame>
     readonly ownConnection: Observable<ConnectedWebSocket>
 }
 
-export class ConnectedWebSocket implements Observer<WebSocketFrame>, WebSocketInterface, Unsubscribable {
+export class ConnectedWebSocket implements WebSocketInterface, Unsubscribable {
     public static implementsInterfaceIoReactivexObserver = true;
     public readonly url: string;
+
     public constructor(url: string) {
         this.url = url;
         this.resetSocket();
@@ -158,23 +161,23 @@ export class ConnectedWebSocket implements Observer<WebSocketFrame>, WebSocketIn
 
     underlyingSocket: (WebSocket | null) = null;
 
-    private resetSocket(){
+    private resetSocket() {
         this.underlyingSocket?.close(1000, "Resetting connection");
         const newSocket = new WebSocket(this.url);
         const parent = this;
         newSocket.binaryType = "blob";
-        newSocket.addEventListener("open", (event)=>{
+        newSocket.addEventListener("open", (event) => {
             parent.ownConnection.next(this);
         });
-        newSocket.addEventListener("error", (event)=>{
-            if(!closed) {
+        newSocket.addEventListener("error", (event) => {
+            if (!closed) {
                 this.closed = true;
                 parent.ownConnection.error(event);
                 parent.read.error(event);
             }
         });
-        newSocket.addEventListener("close", (event)=>{
-            if(!closed) {
+        newSocket.addEventListener("close", (event) => {
+            if (!closed) {
                 this.closed = true;
                 if (event.code == 1000) {
                     parent.ownConnection.complete();
@@ -185,12 +188,12 @@ export class ConnectedWebSocket implements Observer<WebSocketFrame>, WebSocketIn
                 }
             }
         });
-        newSocket.addEventListener("message", (event: MessageEvent)=>{
+        newSocket.addEventListener("message", (event: MessageEvent) => {
             const d = event.data;
-            if(typeof d === "string"){
-                parent.read.next({ text: d });
+            if (typeof d === "string") {
+                parent.read.next({text: d});
             } else {
-                parent.read.next( { binary: d as Blob } )
+                parent.read.next({binary: d as Blob})
             }
         });
         this.underlyingSocket = newSocket;
@@ -200,34 +203,36 @@ export class ConnectedWebSocket implements Observer<WebSocketFrame>, WebSocketIn
     public readonly ownConnection = new Subject<ConnectedWebSocket>();
 
     closed: boolean = false;
-
-    public complete() {
-        this.underlyingSocket?.close(1000, undefined);
-        this.closed = true;
-    }
-
-    public next(t: WebSocketFrame) {
-        this.underlyingSocket?.send(t.text ?? t.binary!)
-    }
-
-    public error(e: any) {
-        if(!closed){
-            this.ownConnection.error(e);
-            this.read.error(e);
-            this.underlyingSocket?.close(3000, e.message);
-            this.closed = true;
+    write: Observer<WebSocketFrame> = ((): Observer<WebSocketFrame> => {
+        const upper = this
+        return {
+            complete() {
+                upper.underlyingSocket?.close(1000, undefined);
+                upper.closed = true;
+            },
+            next(t: WebSocketFrame) {
+                upper.underlyingSocket?.send(t.text ?? t.binary!)
+            },
+            error(e: any) {
+                if (!upper.closed) {
+                    upper.ownConnection.error(e);
+                    upper.read.error(e);
+                    upper.underlyingSocket?.close(3000, e.message);
+                    upper.closed = true;
+                }
+            }
         }
-    }
+    })()
 
     public unsubscribe() {
-        this.complete();
+        this.write.complete()
     }
 }
 
 
 export function parse<TYPE>(item: any, asType: Array<any>): TYPE {
     const parser = asType[0].fromJSON as (item: any, typeArguments: Array<any>) => any
-    if(typeof parser !== "function"){
+    if (typeof parser !== "function") {
         console.log(asType[0])
         throw Error(`Type ${asType[0]} has no function fromJSON!`)
     }
@@ -235,8 +240,8 @@ export function parse<TYPE>(item: any, asType: Array<any>): TYPE {
 }
 
 export function parseUntyped(json: string): any {
-    return JSON.parse(json, function(key, value) {
-        if(typeof value === 'object' && value !== null){
+    return JSON.parse(json, function (key, value) {
+        if (typeof value === 'object' && value !== null) {
             return new Map(Object.entries(value));
         } else {
             return value;
@@ -247,7 +252,9 @@ export function parseUntyped(json: string): any {
 (String as any).fromJSON = (value: any) => value;
 (Number as any).fromJSON = (value: any) => typeof value === "string" ? parseFloat(value) : value;
 (Boolean as any).fromJSON = (value: any) => typeof value === "string" ? value === "true" : value;
-(Array as any).fromJSON = (value: any, typeArguments: Array<any>) => { return (value as Array<any>).map(x => parse(x, typeArguments[0])) };
+(Array as any).fromJSON = (value: any, typeArguments: Array<any>) => {
+    return (value as Array<any>).map(x => parse(x, typeArguments[0]))
+};
 (Map as any).fromJSON = (value: any, typeArguments: Array<any>) => {
     let asObj = value as object;
     let map = new Map<any, any>();
