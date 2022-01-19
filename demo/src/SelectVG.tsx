@@ -3,7 +3,7 @@ import {
     forEach,
     xStackPush,
     HasValueSubject
-} from 'rxjs-plus'
+} from '@lightningkite/rxjs-plus'
 import {BindTestVG} from "./BindTestVG";
 import {map, of, take} from "rxjs";
 

@@ -41,70 +41,70 @@
   template:
     pattern: 'openFiles("image/*")'
     imports:
-      openFiles: 'rxjs-plus'
+      openFiles: '@lightningkite/rxjs-plus'
 
 - id: com.lightningkite.rx.viewgenerators.requestImageGallery
   type: call
   template:
     pattern: 'openFile("image/*")'
     imports:
-      openFile: 'rxjs-plus'
+      openFile: '@lightningkite/rxjs-plus'
 
 - id: com.lightningkite.rx.viewgenerators.requestImageCamera
   type: call
   template:
     pattern: 'openFile("image/*", ~0~)'
     imports:
-      openFile: 'rxjs-plus'
+      openFile: '@lightningkite/rxjs-plus'
 
 - id: com.lightningkite.rx.viewgenerators.requestVideoGallery
   type: call
   template:
     pattern: 'openFile("video/*")'
     imports:
-      openFile: 'rxjs-plus'
+      openFile: '@lightningkite/rxjs-plus'
 
 - id: com.lightningkite.rx.viewgenerators.requestVideosGallery
   type: call
   template:
     pattern: 'openFiles("video/*")'
     imports:
-      openFiles: 'rxjs-plus'
+      openFiles: '@lightningkite/rxjs-plus'
 
 - id: com.lightningkite.rx.viewgenerators.requestVideoCamera
   type: call
   template:
     pattern: 'openFile("video/*", ~0~)'
     imports:
-      openFile: 'rxjs-plus'
+      openFile: '@lightningkite/rxjs-plus'
 
 - id: com.lightningkite.rx.viewgenerators.requestMediasGallery
   type: call
   template:
     pattern: 'openFiles("video/*,image/*")'
     imports:
-      openFiles: 'rxjs-plus'
+      openFiles: '@lightningkite/rxjs-plus'
 
 - id: com.lightningkite.rx.viewgenerators.requestMediaGallery
   type: call
   template:
     pattern: 'openFile("video/*,image/*")'
     imports:
-      openFile: 'rxjs-plus'
+      openFile: '@lightningkite/rxjs-plus'
 
 - id: com.lightningkite.rx.viewgenerators.requestFile
   type: call
   template:
     pattern: 'openFile("*")'
     imports:
-      openFile: 'rxjs-plus'
+      openFile: '@lightningkite/rxjs-plus'
 
 - id: com.lightningkite.rx.viewgenerators.requestFiles
   type: call
   template:
     pattern: 'openFiles("*")'
     imports:
-      openFiles: 'rxjs-plus'
+      openFiles: '@lightningkite/rxjs-plus'
 
 - id: com.lightningkite.rx.viewgenerators.getMimeType
   type: call
@@ -126,7 +126,7 @@
   template:
     pattern: new ValueSubject(false)
     imports:
-      ValueSubject: 'rxjs-plus'
+      ValueSubject: '@lightningkite/rxjs-plus'
 
 - id: com.lightningkite.rx.viewgenerators.displayMetrics
   type: get
@@ -158,70 +158,70 @@
   template:
     pattern: xStackBackPressPop(~this~)
     imports:
-      xStackBackPressPop: 'rxjs-plus'
+      xStackBackPressPop: '@lightningkite/rxjs-plus'
 
 - id: com.lightningkite.rx.viewgenerators.backPressDismiss
   type: call
   template:
     pattern: xStackBackPressDismiss(~this~)
     imports:
-      xStackBackPressDismiss: 'rxjs-plus'
+      xStackBackPressDismiss: '@lightningkite/rxjs-plus'
 
 - id: com.lightningkite.rx.viewgenerators.push
   type: call
   template:
     pattern: xStackPush(~this~, ~0~)
     imports:
-      xStackPush: 'rxjs-plus'
+      xStackPush: '@lightningkite/rxjs-plus'
 
 - id: com.lightningkite.rx.viewgenerators.swap
   type: call
   template:
     pattern: xStackSwap(~this~, ~0~)
     imports:
-      xStackSwap: 'rxjs-plus'
+      xStackSwap: '@lightningkite/rxjs-plus'
 
 - id: com.lightningkite.rx.viewgenerators.pop
   type: call
   template:
     pattern: xStackPop(~this~)
     imports:
-      xStackPop: 'rxjs-plus'
+      xStackPop: '@lightningkite/rxjs-plus'
 
 - id: com.lightningkite.rx.viewgenerators.dismiss
   type: call
   template:
     pattern: xStackDismiss(~this~)
     imports:
-      xStackDismiss: 'rxjs-plus'
+      xStackDismiss: '@lightningkite/rxjs-plus'
 
 - id: com.lightningkite.rx.viewgenerators.popToPredicate
   type: call
   template:
     pattern: 'xStackPopToPredicate(~this~, ~0~)'
     imports:
-      xStackPopToPredicate: 'rxjs-plus'
+      xStackPopToPredicate: '@lightningkite/rxjs-plus'
 
 - id: com.lightningkite.rx.viewgenerators.root
   type: call
   template:
     pattern: xStackRoot(~this~, ~0~)
     imports:
-      xStackRoot: 'rxjs-plus'
+      xStackRoot: '@lightningkite/rxjs-plus'
 
 - id: com.lightningkite.rx.viewgenerators.root
   type: call
   template:
     pattern: xStackRoot(~this~)
     imports:
-      xStackRoot: 'rxjs-plus'
+      xStackRoot: '@lightningkite/rxjs-plus'
 
 - id: com.lightningkite.rx.viewgenerators.reset
   type: call
   template:
     pattern: xStackReset(~this~, ~0~)
     imports:
-      xStackReset: 'rxjs-plus'
+      xStackReset: '@lightningkite/rxjs-plus'
 
 - id: com.lightningkite.rx.viewgenerators.showIn
   type: call
@@ -229,48 +229,48 @@
   template:
     pattern: '~this~.pipe(showInSwap(~0~))'
     imports:
-      showInSwap: rxjs-plus
+      showInSwap: @lightningkite/rxjs-plus
 
 - id: com.lightningkite.rx.viewgenerators.geocode
   type: call
   template:
     pattern: geocode(~*~)
     imports:
-      geocode: rxjs-plus
+      geocode: @lightningkite/rxjs-plus
 - id: com.lightningkite.rx.viewgenerators.requestLocation
   type: call
   template:
     pattern: requestLocation(~*~)
     imports:
-      requestLocation: rxjs-plus
+      requestLocation: @lightningkite/rxjs-plus
 - id: com.lightningkite.rx.viewgenerators.downloadFile
   type: call
   template:
     pattern: downloadFile(~*~)
     imports:
-      downloadFile: rxjs-plus
+      downloadFile: @lightningkite/rxjs-plus
 - id: com.lightningkite.rx.viewgenerators.downloadFileData
   type: call
   template:
     pattern: downloadFileData(~*~)
     imports:
-      downloadFileData: rxjs-plus
+      downloadFileData: @lightningkite/rxjs-plus
 - id: com.lightningkite.rx.viewgenerators.getColor
   type: call
   template:
     pattern: getColor(~*~)
     imports:
-      getColor: rxjs-plus
+      getColor: @lightningkite/rxjs-plus
 - id: com.lightningkite.rx.viewgenerators.openEvent
   type: call
   template:
     pattern: openEvent(~0~, ~1~, ~2~, convert(~3~).toDate(), convert(~4~).toDate())
     imports:
-      openEvent: rxjs-plus
+      openEvent: @lightningkite/rxjs-plus
       convert: '@js-joda/core'
 - id: com.lightningkite.rx.viewgenerators.share
   type: call
   template:
     pattern: share(~*~)
     imports:
-      share: rxjs-plus
+      share: @lightningkite/rxjs-plus

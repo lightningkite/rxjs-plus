@@ -1,4 +1,4 @@
-rxjs-plus
+@lightningkite/rxjs-plus
 
 io.reactivex.rxjava3.disposables.CompositeDisposable
 com.lightningkite.rx.okhttp.ConnectedWebSocket

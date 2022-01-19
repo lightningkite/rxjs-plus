@@ -1,4 +1,4 @@
-import {HasValueSubject, ViewGenerator, xStackPush, showInSwap, subscribeAutoDispose, xStackPop} from "rxjs-plus";
+import {HasValueSubject, ViewGenerator, xStackPush, showInSwap, subscribeAutoDispose, xStackPop} from "@lightningkite/rxjs-plus";
 import {SelectVG} from "./SelectVG";
 import html from './RootVG.html'
 import {BehaviorSubject, map} from "rxjs";

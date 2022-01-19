@@ -1,4 +1,4 @@
-import {bind, subscribeAutoDispose, ViewGenerator} from 'rxjs-plus'
+import {bind, subscribeAutoDispose, ViewGenerator} from '@lightningkite/@lightningkite/rxjs-plus'
 import html from './BindTestVG.html'
 import {BehaviorSubject, map} from "rxjs";
 

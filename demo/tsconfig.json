@@ -31,7 +31,7 @@
     "allowJs": true,
     "baseUrl": "src",
     "jsx": "react-jsx",
-    "jsxImportSource": "rxjs-plus"
+    "jsxImportSource": "@lightningkite/rxjs-plus"
   },
   "include": ["src/**/*", "resources/**/*"]
 }

@@ -175,11 +175,11 @@
   template:
     pattern: 'imageElementSet(~this~, ~0~)'
     imports:
-      imageElementSet: rxjs-plus
+      imageElementSet: @lightningkite/rxjs-plus
 
 - type: call
   id: com.lightningkite.rx.android.resources.setVideo
   template:
     pattern: 'videoElementSet(~this~, ~0~)'
     imports:
-      videoElementSet: rxjs-plus
+      videoElementSet: @lightningkite/rxjs-plus

@@ -4,21 +4,21 @@
   template:
     pattern: '~this~.pipe(subscribeAutoDispose(~0~, ~1~))'
     imports:
-      subscribeAutoDispose: rxjs-plus
+      subscribeAutoDispose: @lightningkite/rxjs-plus
 
 - id: com.lightningkite.rx.android.subscribeAutoDisposeNullable
   type: call
   template:
     pattern: '~this~.pipe(subscribeAutoDispose(~0~, ~1~))'
     imports:
-      subscribeAutoDispose: rxjs-plus
+      subscribeAutoDispose: @lightningkite/rxjs-plus
 
 - id: com.lightningkite.rx.android.onClick
   type: call
   template:
     pattern: "onThrottledEventDo(~this~, 'click', ~1~)"
     imports:
-      onThrottledEventDo: rxjs-plus
+      onThrottledEventDo: @lightningkite/rxjs-plus
 
 - id: com.lightningkite.rx.android.onClick
   type: call
@@ -26,7 +26,7 @@
   template:
     pattern: "onThrottledEventDoWith(~this~, 'click', ~0~, ~2~)"
     imports:
-      onThrottledEventDoWith: rxjs-plus
+      onThrottledEventDoWith: @lightningkite/rxjs-plus
 
 - id: com.lightningkite.rx.android.onClickNullable
   type: call
@@ -34,14 +34,14 @@
   template:
     pattern: "onThrottledEventDoWith(~this~, 'click', ~0~, ~2~)"
     imports:
-      onThrottledEventDoWith: rxjs-plus
+      onThrottledEventDoWith: @lightningkite/rxjs-plus
 
 - id: com.lightningkite.rx.android.onLongClick
   type: call
   template:
     pattern: "onThrottledEventDo(~this~, 'contextmenu', ~1~)"
     imports:
-      onThrottledEventDo: rxjs-plus
+      onThrottledEventDo: @lightningkite/rxjs-plus
 
 - id: com.lightningkite.rx.android.onLongClick
   type: call
@@ -49,7 +49,7 @@
   template:
     pattern: "onThrottledEventDoWith(~this~, 'contextmenu', ~0~, ~2~)"
     imports:
-      onThrottledEventDoWith: rxjs-plus
+      onThrottledEventDoWith: @lightningkite/rxjs-plus
 
 - id: com.lightningkite.rx.android.onLongClickNullable
   type: call
@@ -57,21 +57,21 @@
   template:
     pattern: "onThrottledEventDoWith(~this~, 'contextmenu', ~0~, ~2~)"
     imports:
-      onThrottledEventDoWith: rxjs-plus
+      onThrottledEventDoWith: @lightningkite/rxjs-plus
 
 - id: com.lightningkite.rx.android.removed
   type: get
   template:
     pattern: "elementRemoved(~this~)"
     imports:
-      elementRemoved: rxjs-plus
+      elementRemoved: @lightningkite/rxjs-plus
 
 - id: com.lightningkite.rx.android.visible
   type: get
   reflectiveName:
     pattern: viewVisible
     imports:
-      viewVisible: rxjs-plus
+      viewVisible: @lightningkite/rxjs-plus
   template: (~this~.style.visibility == "visible")
 
 - id: com.lightningkite.rx.android.visible
@@ -79,7 +79,7 @@
   reflectiveName:
     pattern: viewVisible
     imports:
-      viewVisible: rxjs-plus
+      viewVisible: @lightningkite/rxjs-plus
   template: '~this~.style.visibility = ~value~ ? "visible" : ""'
 
 - id: com.lightningkite.rx.android.exists
@@ -87,7 +87,7 @@
   reflectiveName:
     pattern: viewExists
     imports:
-      viewExists: rxjs-plus
+      viewExists: @lightningkite/rxjs-plus
   template: (!~this~.hidden)
 
 - id: com.lightningkite.rx.android.exists
@@ -95,7 +95,7 @@
   reflectiveName:
     pattern: viewExists
     imports:
-      viewExists: rxjs-plus
+      viewExists: @lightningkite/rxjs-plus
   template: '~this~.hidden = !~value~'
 
 - id: com.lightningkite.rx.android.bind
@@ -104,7 +104,7 @@
   template:
     pattern: '~this~.pipe(bind(~0~, "value", "input"))'
     imports:
-      bind: rxjs-plus
+      bind: @lightningkite/rxjs-plus
 
 - id: com.lightningkite.rx.android.bind
   type: call
@@ -112,7 +112,7 @@
   template:
     pattern: '~this~.pipe(bind(~0~, "valueAsNumber", "input"))'
     imports:
-      bind: rxjs-plus
+      bind: @lightningkite/rxjs-plus
 
 - id: com.lightningkite.rx.android.bind
   type: call
@@ -120,7 +120,7 @@
   template:
     pattern: '~this~.pipe(bind(~0~, "valueAsNumber", "input"))'
     imports:
-      bind: rxjs-plus
+      bind: @lightningkite/rxjs-plus
 
 - id: com.lightningkite.rx.android.bind
   type: call
@@ -129,7 +129,7 @@
   template:
     pattern: '~this~.pipe(bind(~0~, "valueAsNumber", "input"))'
     imports:
-      bind: rxjs-plus
+      bind: @lightningkite/rxjs-plus
 
 - id: com.lightningkite.rx.android.bind
   type: call
@@ -137,7 +137,7 @@
   template:
     pattern: '~this~.pipe(bind(~0~, "checked", "input"))'
     imports:
-      bind: rxjs-plus
+      bind: @lightningkite/rxjs-plus
 
 - id: com.lightningkite.rx.android.bindNoUncheck
   type: call
@@ -145,7 +145,7 @@
   template:
     pattern: '~this~.pipe(bindNoUncheck(~0~))'
     imports:
-      bindNoUncheck: rxjs-plus
+      bindNoUncheck: @lightningkite/rxjs-plus
 
 - id: com.lightningkite.rx.android.showIn
   type: call
@@ -153,7 +153,7 @@
   template:
     pattern: '~this~.pipe(showIn(~0~, ~1~))'
     imports:
-      showIn: rxjs-plus
+      showIn: @lightningkite/rxjs-plus
 
 - id: com.lightningkite.rx.android.showIn
   type: call
@@ -161,7 +161,7 @@
   template:
     pattern: '~this~.pipe(showInTyped(~0~, ~1~, ~2~))'
     imports:
-      showInTyped: rxjs-plus
+      showInTyped: @lightningkite/rxjs-plus
 
 - id: com.lightningkite.rx.android.showIn
   type: call
@@ -169,7 +169,7 @@
   template:
     pattern: '~this~.pipe(showIn(~0~, ~1~))'
     imports:
-      showIn: rxjs-plus
+      showIn: @lightningkite/rxjs-plus
 
 - id: com.lightningkite.rx.android.showIn
   type: call
@@ -177,7 +177,7 @@
   template:
     pattern: '~this~.pipe(showInTyped(~0~, ~1~, ~2~))'
     imports:
-      showInTyped: rxjs-plus
+      showInTyped: @lightningkite/rxjs-plus
 
 - id: com.lightningkite.rx.android.showIn
   type: call
@@ -186,7 +186,7 @@
   template:
     pattern: '~this~.pipe(showInSelect(~0~, ~1~))'
     imports:
-      showInSelect: rxjs-plus
+      showInSelect: @lightningkite/rxjs-plus
 
 - id: com.lightningkite.rx.android.showIn
   type: call
@@ -195,7 +195,7 @@
   template:
     pattern: '~this~.pipe(showInSelect(~0~, ~1~, ~2~))'
     imports:
-      showInSelect: rxjs-plus
+      showInSelect: @lightningkite/rxjs-plus
 
 - id: com.lightningkite.rx.android.showIn
   type: call
@@ -204,7 +204,7 @@
   template:
     pattern: '~this~.pipe(showInInput(~*~))'
     imports:
-      showInInput: rxjs-plus
+      showInInput: @lightningkite/rxjs-plus
 
 - id: com.lightningkite.rx.android.showIn
   type: call
@@ -213,7 +213,7 @@
   template:
     pattern: '~this~.pipe(showInInput(~*~))'
     imports:
-      showInInput: rxjs-plus
+      showInInput: @lightningkite/rxjs-plus
 
 - id: com.lightningkite.rx.android.showIn
   type: call
@@ -221,7 +221,7 @@
   template:
     pattern: '~this~.pipe(showInPager(~0~, ~1~, ~2~))'
     imports:
-      showInPager: rxjs-plus
+      showInPager: @lightningkite/rxjs-plus
 
 - id: com.lightningkite.rx.android.showIn
   type: call
@@ -231,7 +231,7 @@
     pattern: 'of(~this~).pipe(showInPager(~0~, ~1~, ~2~))'
     imports:
       of: rxjs
-      showInPager: rxjs-plus
+      showInPager: @lightningkite/rxjs-plus
 
 - id: com.lightningkite.rx.android.StringResource
   type: type
@@ -250,8 +250,8 @@
   template:
     pattern: ~this~.pipe(subscribeAutoDispose(~0~, hasClass("loading")))
     imports:
-      subscribeAutoDispose: rxjs-plus
-      hasClass: rxjs-plus
+      subscribeAutoDispose: @lightningkite/rxjs-plus
+      hasClass: @lightningkite/rxjs-plus
 
 
 - id: com.lightningkite.rx.android.bind
@@ -263,9 +263,9 @@
       nativeJs: '@js-joda/core'
       convert: '@js-joda/core'
       LocalDate: '@js-joda/core'
-      mapSubject: rxjs-plus
-      subscribeAutoDispose: rxjs-plus
-      buttonDate: rxjs-plus
+      mapSubject: @lightningkite/rxjs-plus
+      subscribeAutoDispose: @lightningkite/rxjs-plus
+      buttonDate: @lightningkite/rxjs-plus
 
 - id: com.lightningkite.rx.android.bind
   receiver: Subject<LocalDate>
@@ -276,9 +276,9 @@
       nativeJs: '@js-joda/core'
       convert: '@js-joda/core'
       LocalDate: '@js-joda/core'
-      mapSubject: rxjs-plus
-      subscribeAutoDispose: rxjs-plus
-      buttonDate: rxjs-plus
+      mapSubject: @lightningkite/rxjs-plus
+      subscribeAutoDispose: @lightningkite/rxjs-plus
+      buttonDate: @lightningkite/rxjs-plus
 
 
 - id: com.lightningkite.rx.android.bind
@@ -292,9 +292,9 @@
       LocalTime: '@js-joda/core'
       LocalDateTime: '@js-joda/core'
       LocalDate: '@js-joda/core'
-      mapSubject: rxjs-plus
-      subscribeAutoDispose: rxjs-plus
-      buttonDate: rxjs-plus
+      mapSubject: @lightningkite/rxjs-plus
+      subscribeAutoDispose: @lightningkite/rxjs-plus
+      buttonDate: @lightningkite/rxjs-plus
 
 - id: com.lightningkite.rx.android.bind
   receiver: Subject<LocalTime>
@@ -307,9 +307,9 @@
       LocalTime: '@js-joda/core'
       LocalDateTime: '@js-joda/core'
       LocalDate: '@js-joda/core'
-      mapSubject: rxjs-plus
-      subscribeAutoDispose: rxjs-plus
-      buttonDate: rxjs-plus
+      mapSubject: @lightningkite/rxjs-plus
+      subscribeAutoDispose: @lightningkite/rxjs-plus
+      buttonDate: @lightningkite/rxjs-plus
 
 
 - id: com.lightningkite.rx.android.bind
@@ -321,9 +321,9 @@
       nativeJs: '@js-joda/core'
       convert: '@js-joda/core'
       LocalDateTime: '@js-joda/core'
-      mapSubject: rxjs-plus
-      subscribeAutoDispose: rxjs-plus
-      buttonDate: rxjs-plus
+      mapSubject: @lightningkite/rxjs-plus
+      subscribeAutoDispose: @lightningkite/rxjs-plus
+      buttonDate: @lightningkite/rxjs-plus
 
 - id: com.lightningkite.rx.android.bind
   receiver: Subject<LocalDateTime>
@@ -334,6 +334,6 @@
       nativeJs: '@js-joda/core'
       convert: '@js-joda/core'
       LocalDateTime: '@js-joda/core'
-      mapSubject: rxjs-plus
-      subscribeAutoDispose: rxjs-plus
-      buttonDate: rxjs-plus
+      mapSubject: @lightningkite/rxjs-plus
+      subscribeAutoDispose: @lightningkite/rxjs-plus
+      buttonDate: @lightningkite/rxjs-plus
