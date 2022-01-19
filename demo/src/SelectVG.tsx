@@ -1,24 +1,21 @@
 import {
-    bindMutable,
-    StandardProperty,
     ViewGenerator,
-    inflateHtml,
-    map,
-    StackProperty,
-    ConstantProperty,
-    createElement,
-    forEach
-} from 'rxjs-property'
+    forEach,
+    xStackPush,
+    HasValueSubject
+} from 'rxjs-plus'
 import {BindTestVG} from "./BindTestVG";
+import {map, of, take} from "rxjs";
 
 export class SelectVG implements ViewGenerator {
-    private stack: StackProperty<ViewGenerator>
+    private stack: HasValueSubject<Array<ViewGenerator>>
 
-    constructor(stack: StackProperty<ViewGenerator>) {
+    readonly titleString: string = "Select Demo"
+    constructor(stack: HasValueSubject<Array<ViewGenerator>>) {
         this.stack = stack
     }
 
-    demos = new ConstantProperty<Array<[string, () => ViewGenerator]>>([
+    demos = of<Array<[string, ()=>ViewGenerator]>>([
         ["Bind Test", () => new BindTestVG()],
         ["Bind Test", () => new BindTestVG()],
         ["Bind Test", () => new BindTestVG()],
@@ -26,14 +23,14 @@ export class SelectVG implements ViewGenerator {
         ["Bind Test", () => new BindTestVG()],
     ])
 
-    generate(): HTMLElement {
+    generate(window: Window): HTMLElement {
         return (<div>
             <h1>Select a demo</h1>
             <div>
                 {
                     forEach(this.demos, obs => <div>
                         <button
-                            onClick={ev => this.stack.push(obs.value[1]())}
+                            onClick={ev => obs.pipe(take(1)).subscribe(x => xStackPush(this.stack, x[1]()))}
                         >{obs.pipe(map(x => x[0]))}</button>
                     </div>)
                 }

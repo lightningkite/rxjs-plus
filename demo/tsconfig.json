@@ -30,9 +30,8 @@
     "esModuleInterop": true,
     "allowJs": true,
     "baseUrl": "src",
-    "jsx": "react",
-    "jsxFactory": "createElement",
-    "jsxImportSource": "rxjs-property"
+    "jsx": "react-jsx",
+    "jsxImportSource": "rxjs-plus"
   },
   "include": ["src/**/*", "resources/**/*"]
 }

@@ -1,36 +1,81 @@
 const path = require('path');
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
-    .BundleAnalyzerPlugin
+const webpack = require('webpack')
+const CopyPlugin = require("copy-webpack-plugin");
+// const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
-const config = {
+module.exports = {
+    // plugins: [
+    //   new BundleAnalyzerPlugin()
+    // ],
     entry: './src/index.ts',
+    devtool: 'inline-source-map',
+    plugins: [
+        new webpack.EnvironmentPlugin({
+            API_URL: 'http://localhost:8000/',
+            WEBSOCKET_URL: 'ws://localhost:8000/api/v2/ws/?token=',
+        }),
+        new CopyPlugin({
+            patterns: [
+                {
+                    context: 'src/',
+                    from: "**/*.{html,css,jpg,png,svg,js,mp3}",
+                    to: "[path][name][ext]",
+                    // globOptions: {
+                    //   ignore: 'index.html'
+                    // }
+                },
+            ],
+        }),
+    ],
     module: {
         rules: [
+            // all files with a `.ts` or `.tsx` extension will be handled by `ts-loader`
+            { test: /\.tsx?$/, loader: "ts-loader" },
             {
-                test: /\.tsx?$/,
-                use: 'ts-loader',
-                exclude: /node_modules/,
+                test: /\.s[ac]ss$/i,
+                use: [
+                    // 'resolve-url-loader',
+                    'style-loader',
+                    'css-loader',
+                    'sass-loader',
+                ],
             },
             {
-                test: /\.html$/,
-                use: 'html-loader'
-            }
+                test: /\.(png|jpe?g|gif)$/i,
+                use: [
+                    {
+                        loader: 'file-loader',
+                    },
+                ],
+            },
+            {
+                test: /\.html$/i,
+                loader: 'html-loader',
+                options: {
+                    // Disables attributes processing
+                    sources: false,
+                },
+            },
+            {
+                test: /\.(yaml|ogg|mp3|png|jpg|gif|ttf|eot|svg|woff(2)?)(\?[a-z0-9]+)?$/,
+                exclude: /node_modules/,
+                loader: 'file-loader',
+            },
         ],
     },
-    plugins: [],
-    // devtool: 'inline-source-map',
     resolve: {
-        extensions: ['.tsx', '.ts', '.js'],
+        extensions: ['.ts', '.tsx', '.js', '.html', '.scss']
     },
     output: {
         filename: 'index.js',
-        path: path.resolve(__dirname, 'dist')
+        path: path.resolve(__dirname, 'dist'),
     },
     devServer: {
-        contentBase: path.resolve(__dirname, 'dist'),
-        compress: true,
-        port: 9000,
-    },
+        static: {
+            directory: './dist',
+            publicPath: process.env.DEV_PUBLIC_PATH || '/',
+        },
+        host: process.env.DEV_HOST || '127.0.0.1',
+        port: process.env.DEV_PORT || '8080',
+    }
 };
-config.plugins.push(new BundleAnalyzerPlugin())
-module.exports = config
