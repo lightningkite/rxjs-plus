@@ -37,11 +37,11 @@ export interface EntryPoint extends HasBackAction {
 }
 
 export namespace EntryPointDefaults {
-    export function onBackPressed(): boolean { return false }
-    export function handleDeepLink(schema: string, host: string, path: string, params: Map<string, string>): void {
+    export function onBackPressed(this_: EntryPoint): boolean { return false }
+    export function handleDeepLink(this_: EntryPoint, schema: string, host: string, path: string, params: Map<string, string>): void {
         console.log(`${schema}://${host}${path} ${params}`)
     }
-    export const mainStack: (HasValueSubject<Array<ViewGenerator>> | null) = null;
+    export function getMainStack(this_: EntryPoint): (HasValueSubject<Array<ViewGenerator>> | null) { return null }
 }
 
 export interface Address {

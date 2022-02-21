@@ -13,7 +13,7 @@
     imports:
       combineLatestWith: rxjs
       mapCall: '@lightningkite/rxjs-plus'
-      safeEq: khrysalis-runtime
+      safeEq: '@lightningkite/khrysalis-runtime'
 
 - id: com.lightningkite.rx.notEqualTo
   type: call
@@ -23,9 +23,9 @@
       combineLatestWith: rxjs
       mapCall: '@lightningkite/rxjs-plus'
       not: '@lightningkite/rxjs-plus'
-      safeEq: khrysalis-runtime
+      safeEq: '@lightningkite/khrysalis-runtime'
 
-- id: com.lightningkite.rx.notEqualTo
+- id: com.lightningkite.rx.isEqualTo
   type: call
   template:
     pattern: ~this~.pipe(subjectIsEqualTo(~0~))
@@ -64,6 +64,14 @@
 - id: com.lightningkite.rx.HasValueSubject.value
   type: set
   template: ~this~.next(~value~)
+
+- id: com.lightningkite.rx.valueNullable
+  type: get
+  template: "~this~.value"
+
+- id: com.lightningkite.rx.valueNullable
+  type: set
+  template: "~this~.next(~value~)"
 
 - id: com.lightningkite.rx.get
   type: call
@@ -111,6 +119,7 @@
     imports:
       combineLatestWith: rxjs
       and: '@lightningkite/rxjs-plus'
+      mapCall: '@lightningkite/rxjs-plus'
 
 - id: com.lightningkite.rx.or
   type: call
@@ -119,6 +128,7 @@
     imports:
       combineLatestWith: rxjs
       or: '@lightningkite/rxjs-plus'
+      mapCall: '@lightningkite/rxjs-plus'
 
 - id: com.lightningkite.rx.not
   type: call
@@ -228,7 +238,6 @@
       mapSubjectWithExisting: '@lightningkite/rxjs-plus'
 
 - id: com.lightningkite.rx.withWrite
-  receiver: Subject
   type: call
   template:
     pattern: '~this~.pipe(withWrite(~0~))'
@@ -238,17 +247,19 @@
 - id: com.lightningkite.rx.notNull
   type: call
   template:
-    pattern: '~this~.pipe(filter((x): x is ~T0~ => x !== null))'
+    pattern: '~this~.pipe(filter(isNonNull))'
     imports:
       filter: rxjs
+      isNonNull: '@lightningkite/rxjs-plus'
 
 - id: com.lightningkite.rx.mapNotNull
   type: call
   template:
-    pattern: '~this~.pipe(map(~0~), filter((x): x is ~T1~ => x !== null))'
+    pattern: '~this~.pipe(map(~0~), filter(isNonNull))'
     imports:
       map: rxjs
       filter: rxjs
+      isNonNull: '@lightningkite/rxjs-plus'
 
 - id: com.lightningkite.rx.mapNullable
   type: call
@@ -289,10 +300,10 @@
   reciever: Observable
   type: call
   template:
-    pattern: '~this~.pipe(combineLatestWith(~0~), map(~1~))'
+    pattern: '~this~.pipe(combineLatestWith(~0~), mapCall(~1~))'
     imports:
       combineLatestWith: rxjs
-      map: rxjs
+      mapCall: '@lightningkite/rxjs-plus'
 
 - id: com.lightningkite.rx.combineLatest
   reciever: List

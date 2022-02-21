@@ -232,6 +232,10 @@ export function call<
     return pipe(combineLatestWith(...args), map(parts => ((parts[0] as Receiver)[functionName] as Func)(parts.slice(1))))
 }
 
+// export function tuplize<F extends (...args: Array<any>)=>any>(func: F): (args: Parameters<F>) => ReturnType<F> {
+//     return args => func(...args)
+// }
+
 export function mapCall<
     Func extends (...args: Array<any>) => any
     >(func: Func): OperatorFunction<{ [Key in keyof Parameters<Func>]: Parameters<Func>[Key]}, ReturnType<Func>> {
@@ -299,7 +303,8 @@ function test() {
 
     function checkPasses2(obs: Observable<boolean>){}
     checkPasses2(of(new Set([1, 2, 3])).pipe(call("has", of(2))))
-    checkPasses2(of(1).pipe(combineLatestWith(of(2)), map(tuple => safeEq(...tuple))))
+    checkPasses2(of(1).pipe(combineLatestWith(of(2)), mapCall(safeEq)))
+    // checkPasses2(of(1).pipe(combineLatestWith(of(2)), map(tuplize(safeEq))))
     // of(new Set([1, 2, 3])).pipe(combineLatestWith(of(2)), mapCall("has"))
     // of(2).pipe(combineLatestWith(of(new Set([1, 2, 3]))), mapCall("has"))
 

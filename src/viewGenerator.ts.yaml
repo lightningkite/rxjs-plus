@@ -124,9 +124,9 @@
 - id: com.lightningkite.rx.viewgenerators.ApplicationAccess.softInputActive
   type: get
   template:
-    pattern: new ValueSubject(false)
+    pattern: new BehaviorSubject(false)
     imports:
-      ValueSubject: '@lightningkite/rxjs-plus'
+      BehaviorSubject: 'rxjs'
 
 - id: com.lightningkite.rx.viewgenerators.displayMetrics
   type: get

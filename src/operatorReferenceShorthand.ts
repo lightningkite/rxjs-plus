@@ -4,6 +4,10 @@ export interface ReversibleFunction<A, B> {
     reverse(): ReversibleFunction<B, A>
 }
 
+export function isNonNull<T>(value: T): value is NonNullable<T> {
+    return value !== null;
+}
+
 export function plus(left: number, right: number): number
 export function plus(left: string, right: any): string
 export function plus(left: any, right: any): any { return left + right }

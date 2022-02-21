@@ -22,13 +22,10 @@ import {tap} from "rxjs/operators";
 
 export interface VirtualProperty<RECEIVER, T> {
     get(receiver: RECEIVER): T
-}
-
-export interface VirtualMutableProperty<RECEIVER, T> extends VirtualProperty<RECEIVER, T> {
     set(receiver: RECEIVER, value: T): any
 }
 
-export function hasClass(className: string): VirtualMutableProperty<HTMLElement, boolean> {
+export function hasClass(className: string): VirtualProperty<HTMLElement, boolean> {
     return {
         get(receiver: HTMLElement): boolean {
             return receiver.classList.contains(className)
@@ -69,47 +66,55 @@ export function triggerDetatchEvent(view: HTMLElement) {
 }
 
 export function elementRemoved(element: HTMLElement): CompositeDisposable {
+    mutSetup()
     let d = element[removedSymbol] ?? new CompositeDisposable()
     element[removedSymbol] = d
     return d
 }
 
-const mut = new MutationObserver(list => {
-    for (const event of list) {
-        for (const node of event.removedNodes) {
-            if (node instanceof HTMLElement) {
-                triggerDetatchEvent(node)
+let mut: MutationObserver | undefined = undefined
+function mutSetup() {
+    mut = new MutationObserver(list => {
+        for (const event of list) {
+            for (const node of event.removedNodes) {
+                if (node instanceof HTMLElement) {
+                    triggerDetatchEvent(node)
+                }
             }
         }
-    }
-})
-mut.observe(document.body, {
-    childList: true,
-    subtree: true
-})
+    })
+    mut.observe(document.body, {
+        childList: true,
+        subtree: true
+    })
+}
 
+export function subscribeAutoDispose<OWNER extends {readonly root: HTMLElement}, VALUE>(owner: HTMLElement, action: (e: OWNER, v: VALUE) => void): (<O extends Observable<VALUE>>(obs: O) => O)
+export function subscribeAutoDispose<OWNER extends {readonly root: HTMLElement}, KEY extends keyof OWNER>(owner: OWNER, key: KEY): (<O extends Observable<T>, T extends OWNER[KEY]>(obs: O) => O)
+export function subscribeAutoDispose<OWNER extends {readonly root: HTMLElement}, VALUE>(owner: OWNER, key: VirtualProperty<OWNER, VALUE>): (<O extends Observable<T>, T extends VALUE>(obs: O) => O)
 export function subscribeAutoDispose<OWNER extends HTMLElement, VALUE>(owner: HTMLElement, action: (e: OWNER, v: VALUE) => void): (<O extends Observable<VALUE>>(obs: O) => O)
 export function subscribeAutoDispose<OWNER extends HTMLElement, KEY extends keyof OWNER>(owner: OWNER, key: KEY): (<O extends Observable<T>, T extends OWNER[KEY]>(obs: O) => O)
-export function subscribeAutoDispose<OWNER extends HTMLElement, VALUE>(owner: OWNER, key: VirtualMutableProperty<OWNER, VALUE>): (<O extends Observable<T>, T extends VALUE>(obs: O) => O)
-export function subscribeAutoDispose<OWNER extends HTMLElement, VALUE>(owner: OWNER, key: string | ((e: OWNER, v: VALUE) => void) | VirtualMutableProperty<OWNER, VALUE>): (<O extends Observable<VALUE>>(obs: O) => O) {
+export function subscribeAutoDispose<OWNER extends HTMLElement, VALUE>(owner: OWNER, key: VirtualProperty<OWNER, VALUE>): (<O extends Observable<T>, T extends VALUE>(obs: O) => O)
+export function subscribeAutoDispose<OWNER extends (HTMLElement | {readonly root: HTMLElement}), VALUE>(owner: OWNER, key: string | ((e: OWNER, v: VALUE) => void) | VirtualProperty<OWNER, VALUE>): (<O extends Observable<VALUE>>(obs: O) => O) {
+    const fixedOwner: HTMLElement = (owner instanceof HTMLElement) ? owner : owner.root
     switch (typeof key) {
         case "string":
             return property => {
-                elementRemoved(owner).parts.push(property.subscribe(value => {
+                elementRemoved(fixedOwner).parts.push(property.subscribe(value => {
                     (owner as any)[key] = value
                 }))
                 return property
             }
         case "function":
             return property => {
-                elementRemoved(owner).parts.push(property.subscribe(value => {
+                elementRemoved(fixedOwner).parts.push(property.subscribe(value => {
                     key(owner, value)
                 }))
                 return property
             }
         default:
             return property => {
-                elementRemoved(owner).parts.push(property.subscribe(value => {
+                elementRemoved(fixedOwner).parts.push(property.subscribe(value => {
                     key.set(owner, value)
                 }))
                 return property
@@ -119,7 +124,7 @@ export function subscribeAutoDispose<OWNER extends HTMLElement, VALUE>(owner: OW
 
 export function bind<OWNER extends HTMLElement, VALUE, EVENT extends keyof HTMLElementEventMap>(
     owner: OWNER,
-    virtualProperty: VirtualMutableProperty<OWNER, VALUE>,
+    virtualProperty: VirtualProperty<OWNER, VALUE>,
     event: EVENT
 ): (subject: Subject<VALUE>) => Subject<VALUE>
 export function bind<OWNER extends HTMLElement, KEY extends keyof OWNER, EVENT extends keyof HTMLElementEventMap>(
@@ -129,7 +134,7 @@ export function bind<OWNER extends HTMLElement, KEY extends keyof OWNER, EVENT e
 ): (subject: Subject<OWNER[KEY]>) => Subject<OWNER[KEY]>
 export function bind<OWNER extends HTMLElement, VALUE, EVENT extends keyof HTMLElementEventMap>(
     owner: OWNER,
-    key: string | VirtualMutableProperty<OWNER, VALUE>,
+    key: string | VirtualProperty<OWNER, VALUE>,
     event: EVENT
 ): (subject: Subject<VALUE>) => Subject<VALUE> {
     if (typeof key === "string") {
@@ -365,7 +370,7 @@ export function onThrottledEventDoWith<T>(element: HTMLElement, eventName: strin
     )
 }
 
-export const viewVisible: VirtualMutableProperty<HTMLElement, boolean> = {
+export const viewVisible: VirtualProperty<HTMLElement, boolean> = {
     get(receiver: HTMLElement): boolean {
         return receiver.style.visibility == "visible"
     },
@@ -373,7 +378,7 @@ export const viewVisible: VirtualMutableProperty<HTMLElement, boolean> = {
         receiver.style.visibility = value ? "visible" : "hidden"
     }
 }
-export const viewExists: VirtualMutableProperty<HTMLElement, boolean> = {
+export const viewExists: VirtualProperty<HTMLElement, boolean> = {
     get(receiver: HTMLElement): boolean {
         return !receiver.hidden
     },
@@ -382,9 +387,79 @@ export const viewExists: VirtualMutableProperty<HTMLElement, boolean> = {
     }
 }
 
-export function buttonDate(type: HTMLInputElement["type"]): VirtualMutableProperty<HTMLElement, Date> & { getInput(receiver: HTMLElement): HTMLInputElement }
-export function buttonDate(type: HTMLInputElement["type"], defaultText: string): VirtualMutableProperty<HTMLElement, Date | null> & { getInput(receiver: HTMLElement): HTMLInputElement }
-export function buttonDate(type: HTMLInputElement["type"], defaultText?: string): VirtualMutableProperty<HTMLElement, Date | null> & { getInput(receiver: HTMLElement): HTMLInputElement } {
+export type PathPartMid<T, V> = PropertyReference<T, V> | VirtualProperty<T, V> | ((t: T)=>V)
+export type PathPartEnding<T, V> = PropertyReference<T, V> | VirtualProperty<T, V> | ((t: T, v: V)=>void)
+export type PropertyReference<T, V> = keyof { [ P in keyof T as T[P] extends V ? P : never ] : P } & keyof T & string;
+
+export function chain<A, B, C>(firstPart: PathPartMid<A, B>, secondPart: PathPartEnding<B, C>): VirtualProperty<A, C>
+export function chain<A, B, C, D>(firstPart: PathPartMid<A, B>, secondPart: PathPartMid<B, C>, thirdPart: PathPartEnding<C, D>): VirtualProperty<A, D>
+export function chain(...parts: Array<PathPartMid<any, any> | PathPartEnding<any, any>>): VirtualProperty<any, any> { return _chain(parts.slice(0, -1) as Array<PathPartMid<any, any>>, parts[parts.length - 1] as PathPartEnding<any, any>) }
+function _chain(pathParts: Array<PathPartMid<any, any>>, last: PathPartEnding<any, any>): VirtualProperty<any, any> {
+    return {
+        get(receiver: HTMLElement): any {
+            let current: any = receiver
+            for(const ref of pathParts) {
+                switch(typeof ref) {
+                    case "function":
+                        current = ref(current)
+                        break
+                    case "string":
+                        current = current[ref]
+                        break
+                    case "object":
+                        current = ref.get(current)
+                        break
+                }
+            }
+            switch(typeof last) {
+                case "string":
+                    return current[last]
+                case "object":
+                    return last.get(current)
+            }
+        },
+        set(receiver: HTMLElement, value: any): any {
+            let current: any = receiver
+            for(const ref of pathParts) {
+                switch(typeof ref) {
+                    case "function":
+                        current = ref(current)
+                        break
+                    case "string":
+                        current = current[ref]
+                        break
+                    case "object":
+                        current = ref.get(current)
+                        break
+                }
+            }
+            switch(typeof last) {
+                case "function":
+                    last(current, value)
+                    break
+                case "string":
+                    current[last] = value
+                    break
+                case "object":
+                    last.set(current, value)
+                    break
+            }
+        }
+    }
+}
+
+export function select<K extends keyof HTMLElementTagNameMap>(tagName: K): (element: HTMLElement) => HTMLElementTagNameMap[K] {
+    // return (element) => element.querySelector
+    return (element) => (element.tagName === tagName) ? (element as HTMLElementTagNameMap[K]) : element.getElementsByTagName(tagName)[0]
+}
+
+function test(value: Observable<string>, view: HTMLElement) {
+    value.pipe(subscribeAutoDispose(view, chain("style", "backgroundColor")))
+}
+
+export function buttonDate(type: HTMLInputElement["type"]): VirtualProperty<HTMLElement, Date> & { getInput(receiver: HTMLElement): HTMLInputElement }
+export function buttonDate(type: HTMLInputElement["type"], defaultText: string): VirtualProperty<HTMLElement, Date | null> & { getInput(receiver: HTMLElement): HTMLInputElement }
+export function buttonDate(type: HTMLInputElement["type"], defaultText?: string): VirtualProperty<HTMLElement, Date | null> & { getInput(receiver: HTMLElement): HTMLInputElement } {
     return {
         getInput(receiver: HTMLElement): HTMLInputElement {
             const existing = receiver.getElementsByTagName("input")[0]

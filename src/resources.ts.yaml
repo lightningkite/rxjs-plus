@@ -38,7 +38,7 @@
 - type: "call"
   id: "com.lightningkite.rx.android.resources.ViewStringTemplate"
   template:
-    pattern: vsprintf(~this~, ~arguments~)
+    pattern: vsprintf(~0~, ~arguments~)
     imports:
       vsprintf: sprintf-js
 
@@ -172,6 +172,10 @@
 
 - type: call
   id: com.lightningkite.rx.android.resources.setImage
+  reflectiveName:
+    pattern: 'imageElementSet'
+    imports:
+      imageElementSet: '@lightningkite/rxjs-plus'
   template:
     pattern: 'imageElementSet(~this~, ~0~)'
     imports:
@@ -179,6 +183,10 @@
 
 - type: call
   id: com.lightningkite.rx.android.resources.setVideo
+  reflectiveName:
+    pattern: 'videoElementSet'
+    imports:
+      videoElementSet: '@lightningkite/rxjs-plus'
   template:
     pattern: 'videoElementSet(~this~, ~0~)'
     imports:

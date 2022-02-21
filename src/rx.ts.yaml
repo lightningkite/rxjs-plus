@@ -7,15 +7,15 @@
 - id: io.reactivex.rxjava3.core.ObservableSource
   type: type
   template:
-    pattern: ObservableInput<~T0~>
+    pattern: Observable<~T0~>
     imports:
-      ObservableInput: rxjs
+      Observable: rxjs
 - id: io.reactivex.rxjava3.core.SingleSource
   type: type
   template:
-    pattern: ObservableInput<~T0~>
+    pattern: Observable<~T0~>
     imports:
-      ObservableInput: rxjs
+      Observable: rxjs
 
 - id: io.reactivex.rxjava3.core.Observable
   type: type
@@ -93,9 +93,10 @@
 - id: io.reactivex.rxjava3.core.Observable.retryWhen
   type: call
   template:
-    pattern: ~this~.pipe(retryWhenAlt(~0~))
+    pattern: ~this~.pipe(retryWhen(~0~))
     imports:
-      retryWhenAlt: '@lightningkite/rxjs-plus'
+      retryWhen: rxjs/operators
+#      retryWhen: '@lightningkite/rxjs-plus'
 
 - id: io.reactivex.rxjava3.core.Observable.delay
   type: call
@@ -103,6 +104,13 @@
     pattern: ~this~.pipe(delay(~0~))
     imports:
       delay: rxjs/operators
+
+- id: io.reactivex.rxjava3.core.Observable.timeout
+  type: call
+  template:
+    pattern: '~this~.pipe(timeout(~0~))'
+    imports:
+      timeout: rxjs/operators
 
 - id: io.reactivex.rxjava3.core.Observable.debounce
   type: call
@@ -136,51 +144,27 @@
 - id: io.reactivex.rxjava3.core.Observable.distinctUntilChanged
   type: call
   template:
-    pattern: ~this~.pipe(distinctUntilChanged(~0~))
+    pattern: ~this~.pipe(distinctUntilChanged(equalBy(~0~)))
     imports:
       distinctUntilChanged: rxjs/operators
+      equalBy: '@lightningkite/khrysalis-runtime'
 
 - id: io.reactivex.rxjava3.core.Observable.mapNotNull
   type: call
   template:
-    pattern: ~this~.pipe(map(~0~), filter(x => x !== null))
+    pattern: ~this~.pipe(map(~0~), filter(isNonNull))
     imports:
       map: rxjs/operators
       filter: rxjs/operators
+      isNonNull: '@lightningkite/rxjs-plus'
 
 - id: io.reactivex.rxjava3.core.Observable.filterNotNull
   type: call
   template:
-    pattern: ~this~.pipe(filter(x => x !== null))
+    pattern: ~this~.pipe(filter(isNonNull))
     imports:
       filter: rxjs/operators
-
-- id: com.lightningkite.rx.combineLatest
-  type: call
-  template:
-    pattern: combineLatest([~this~, ~0~]).pipe(map(x => (~1~)(x[0], x[1])))
-    imports:
-      map: rxjs/operators
-      combineLatest: rxjs
-
-- id: com.lightningkite.rx.combineLatest
-  type: call
-  receiver: kotlin.collections.List
-  arguments: []
-  template:
-    pattern: combineLatest(~this~)
-    imports:
-      map: rxjs/operators
-      combineLatest: rxjs
-
-- id: com.lightningkite.rx.combineLatest
-  type: call
-  receiver: kotlin.collections.List
-  template:
-    pattern: combineLatest(~this~).pipe(map(~0~))
-    imports:
-      map: rxjs/operators
-      combineLatest: rxjs
+      isNonNull: '@lightningkite/rxjs-plus'
 
 - id: io.reactivex.rxjava3.core.Observable.skip
   type: call
@@ -296,9 +280,9 @@
 - id: io.reactivex.rxjava3.core.Observable.doOnDispose
   type: call
   template:
-    pattern: ~this~.pipe(doOnDispose(~0~))
+    pattern: ~this~.pipe(finalize(~0~))
     imports:
-      doOnDispose: '@lightningkite/rxjs-plus'
+      finalize: rxjs/operators
 
 - id: io.reactivex.rxjava3.core.Observable.doOnError
   type: call
@@ -335,6 +319,13 @@
     pattern: concat(~*~)
     imports:
       concat: rxjs
+
+- id: io.reactivex.rxjava3.core.Observable.merge
+  type: call
+  template:
+    pattern: merge(~*~)
+    imports:
+      merge: rxjs
 
 - id: io.reactivex.rxjava3.core.Observable.replay
   type: call
@@ -542,6 +533,32 @@
 
 - id: io.reactivex.rxjava3.core.Single.zip
   type: call
+  arguments: ["*", "*", "*"]
+  template:
+    pattern: zip(~0~, ~1~, ~2~)
+    imports:
+      zip: rxjs
+      map: rxjs/operators
+
+- id: io.reactivex.rxjava3.core.Single.zip
+  type: call
+  arguments: ["*", "*", "*", "*"]
+  template:
+    pattern: zip(~0~, ~1~, ~2~, ~3~)
+    imports:
+      zip: rxjs
+
+- id: io.reactivex.rxjava3.core.Single.zip
+  type: call
+  arguments: ["*", "*", "*", "*", "*"]
+  template:
+    pattern: zip(~0~, ~1~, ~2~, ~3~, ~4~)
+    imports:
+      zip: rxjs
+
+- id: io.reactivex.rxjava3.core.Single.zip
+  type: call
+  arguments: ["*", "*"]
   template:
     pattern: zip(...~0~).pipe(map(~1~))
     imports:
@@ -883,18 +900,18 @@
 - id: io.reactivex.rxjava3.subjects.BehaviorSubject
   type: type
   template:
-    pattern: ReplaySubject<~T0~>
+    pattern: BehaviorSubject<~T0~>
     imports:
-      ReplaySubject: rxjs
+      BehaviorSubject: rxjs
 - id: io.reactivex.rxjava3.subjects.BehaviorSubject.create
   type: call
   template:
-    pattern: new ReplaySubject()
+    pattern: new BehaviorSubject()
     imports:
-      Subject: rxjs
+      BehaviorSubject: rxjs
 - id: io.reactivex.rxjava3.subjects.BehaviorSubject.createDefault
   type: call
   template:
-    pattern: new ReplaySubject(~0~)
+    pattern: new BehaviorSubject(~0~)
     imports:
-      Subject: rxjs
+      BehaviorSubject: rxjs

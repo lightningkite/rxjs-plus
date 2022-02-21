@@ -96,7 +96,7 @@
     pattern: viewExists
     imports:
       viewExists: '@lightningkite/rxjs-plus'
-  template: '~this~.hidden = !~value~'
+  template: '~this~.hidden = !(~value~)'
 
 - id: com.lightningkite.rx.android.bind
   type: call
@@ -337,3 +337,8 @@
       mapSubject: '@lightningkite/rxjs-plus'
       subscribeAutoDispose: '@lightningkite/rxjs-plus'
       buttonDate: '@lightningkite/rxjs-plus'
+
+- id: com.lightningkite.rx.android.replace
+  receiver: View
+  type: call
+  template: ~this~.replaceWith(~0~)
