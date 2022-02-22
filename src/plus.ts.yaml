@@ -26,6 +26,7 @@
       safeEq: '@lightningkite/khrysalis-runtime'
 
 - id: com.lightningkite.rx.isEqualTo
+  receiver: Subject
   type: call
   template:
     pattern: ~this~.pipe(subjectIsEqualTo(~0~))

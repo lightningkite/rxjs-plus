@@ -89,14 +89,14 @@ function mutSetup() {
     })
 }
 
-export function subscribeAutoDispose<OWNER extends {readonly root: HTMLElement}, VALUE>(owner: HTMLElement, action: (e: OWNER, v: VALUE) => void): (<O extends Observable<VALUE>>(obs: O) => O)
-export function subscribeAutoDispose<OWNER extends {readonly root: HTMLElement}, KEY extends keyof OWNER>(owner: OWNER, key: KEY): (<O extends Observable<T>, T extends OWNER[KEY]>(obs: O) => O)
-export function subscribeAutoDispose<OWNER extends {readonly root: HTMLElement}, VALUE>(owner: OWNER, key: VirtualProperty<OWNER, VALUE>): (<O extends Observable<T>, T extends VALUE>(obs: O) => O)
-export function subscribeAutoDispose<OWNER extends HTMLElement, VALUE>(owner: HTMLElement, action: (e: OWNER, v: VALUE) => void): (<O extends Observable<VALUE>>(obs: O) => O)
+export function subscribeAutoDispose<OWNER extends HTMLElement, VALUE>(owner: OWNER, action: (e: OWNER, v: VALUE) => void): (<O extends Observable<VALUE>>(obs: O) => O)
 export function subscribeAutoDispose<OWNER extends HTMLElement, KEY extends keyof OWNER>(owner: OWNER, key: KEY): (<O extends Observable<T>, T extends OWNER[KEY]>(obs: O) => O)
 export function subscribeAutoDispose<OWNER extends HTMLElement, VALUE>(owner: OWNER, key: VirtualProperty<OWNER, VALUE>): (<O extends Observable<T>, T extends VALUE>(obs: O) => O)
-export function subscribeAutoDispose<OWNER extends (HTMLElement | {readonly root: HTMLElement}), VALUE>(owner: OWNER, key: string | ((e: OWNER, v: VALUE) => void) | VirtualProperty<OWNER, VALUE>): (<O extends Observable<VALUE>>(obs: O) => O) {
-    const fixedOwner: HTMLElement = (owner instanceof HTMLElement) ? owner : owner.root
+export function subscribeAutoDispose<OWNER extends {readonly root: HTMLElement}, VALUE>(owner: OWNER, action: (e: OWNER, v: VALUE) => void): (<O extends Observable<VALUE>>(obs: O) => O)
+export function subscribeAutoDispose<OWNER extends {readonly root: HTMLElement}, KEY extends keyof OWNER>(owner: OWNER, key: KEY): (<O extends Observable<T>, T extends OWNER[KEY]>(obs: O) => O)
+export function subscribeAutoDispose<OWNER extends {readonly root: HTMLElement}, VALUE>(owner: OWNER, key: VirtualProperty<OWNER, VALUE>): (<O extends Observable<T>, T extends VALUE>(obs: O) => O)
+export function subscribeAutoDispose<OWNER extends HTMLElement, VALUE>(owner: OWNER, key: string | ((e: OWNER, v: VALUE) => void) | VirtualProperty<OWNER, VALUE>): (<O extends Observable<VALUE>>(obs: O) => O) {
+    const fixedOwner: HTMLElement = owner;//(owner instanceof HTMLElement) ? owner : owner.root
     switch (typeof key) {
         case "string":
             return property => {
@@ -325,7 +325,7 @@ export function makeDatalistForElement(element: HTMLElement): HTMLDataListElemen
 }
 
 export function showInPager<T>(
-    element: { previous: HTMLElement, next: HTMLElement, container: HTMLElement },
+    element: { root: HTMLElement, previous: HTMLElement, next: HTMLElement, container: HTMLElement },
     selectedIndex: Subject<number> = new BehaviorSubject(0),
     makeView: (t: T) => HTMLElement
 ): MonoTypeOperatorFunction<Array<T>> {
@@ -335,9 +335,9 @@ export function showInPager<T>(
         const obsWithIndex = combineLatest([obs, selectedIndex])
         obsWithIndex.pipe(
             map(([list, index]) => [list[index], index] as [T, number]),
-            subscribeAutoDispose(element.container, (container, [value, index]) => {
+            subscribeAutoDispose(element, (container, [value, index]) => {
                 const newView = makeView(value)
-                swapViewSwap(container, current, newView,
+                swapViewSwap(container.container, current, newView,
                     index > pastIndex ? 'stack-push'
                         : index < pastIndex ? 'stack-pop'
                             : 'stack-fade'
