@@ -33,7 +33,7 @@ export namespace HasBackActionDefaults {
 export interface EntryPoint extends HasBackAction {
     handleDeepLink(schema: string, host: string, path: string, params: Map<string, string>): void
 
-    readonly mainStack: (HasValueSubject<Array<ViewGenerator>> | null);
+    readonly mainStack: (BehaviorSubject<Array<ViewGenerator>> | null);
 }
 
 export namespace EntryPointDefaults {
@@ -41,30 +41,8 @@ export namespace EntryPointDefaults {
     export function handleDeepLink(this_: EntryPoint, schema: string, host: string, path: string, params: Map<string, string>): void {
         console.log(`${schema}://${host}${path} ${params}`)
     }
-    export function getMainStack(this_: EntryPoint): (HasValueSubject<Array<ViewGenerator>> | null) { return null }
+    export function getMainStack(this_: EntryPoint): (BehaviorSubject<Array<ViewGenerator>> | null) { return null }
 }
-
-export interface Address {
-    countryName?: string
-    adminArea?: string
-    subAdminArea?: string
-    featureName?: string
-    locality?: string
-    subLocality?: string
-    thoroughfare?: string
-    subThoroughfare?: string
-    premises?: string
-    postalCode?: string
-    countryCode?: string
-}
-
-export var geocode: (
-    latitudeOrAddress: number | string,
-    longitude?: number
-) => Observable<Array<Address>> = () => {
-    throw new Error("No geocoding method configured")
-}
-
 
 export function requestLocation(
     accuracyBetterThanMeters: number = 10.0
@@ -196,7 +174,7 @@ showDialogEvent.subscribe({
         if (value.confirmation) {
             const cancel = document.createElement("button");
             cancel.classList.add("rxjs-plus-dialog-cancel");
-            cancel.textContent = "Cancel";
+            cancel.innerText = "Cancel";
             cancel.onclick = (e) => {
                 e.preventDefault();
                 document.body.removeChild(top);
@@ -206,7 +184,7 @@ showDialogEvent.subscribe({
 
         const ok = document.createElement("button");
         ok.classList.add("rxjs-plus-dialog-ok");
-        ok.textContent = "OK";
+        ok.innerText = "OK";
         ok.onclick = (e) => {
             e.preventDefault();
             if (value.confirmation) {
@@ -425,16 +403,28 @@ export function showInSwap<T extends ViewGenerator>(
     let current: HTMLElement | null = null
     let previousStackSize = 0;
     return subscribeAutoDispose<HTMLDivElement, Array<T>>(parent, (element, value) => {
-        const next = value[value.length - 1].generate(window)
-        const newStackSize = value.length;
-        let animation = `${cssAnimationPrefix}-fade`
-        if (newStackSize > previousStackSize) {
-            animation = `${cssAnimationPrefix}-push`
-        } else if (newStackSize < previousStackSize) {
-            animation = `${cssAnimationPrefix}-pop`
+        if(value.length === 0) {
+            previousStackSize = 0
+            swapViewSwap(parent, current, null, `${cssAnimationPrefix}-fade`)
+            current = null
+        } else {
+            const next = value[value.length - 1].generate(window)
+            const newStackSize = value.length;
+            let animation = `${cssAnimationPrefix}-fade`
+            if (newStackSize > previousStackSize) {
+                animation = `${cssAnimationPrefix}-push`
+            } else if (newStackSize < previousStackSize) {
+                animation = `${cssAnimationPrefix}-pop`
+            }
+            previousStackSize = newStackSize
+            swapViewSwap(parent, current, next, animation)
+            current = next
         }
-        previousStackSize = newStackSize
-        swapViewSwap(parent, current, next, animation)
-        current = next
     })
+}
+
+export function replaceWithStyles(oldElement: HTMLElement, newElement: HTMLElement) {
+    newElement.style.cssText += oldElement.style.cssText
+    newElement.className += " " + oldElement.className
+    oldElement.replaceWith(newElement)
 }

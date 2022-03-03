@@ -76,10 +76,6 @@
 
 - id: com.lightningkite.rx.android.visible
   type: set
-  reflectiveName:
-    pattern: viewVisible
-    imports:
-      viewVisible: '@lightningkite/rxjs-plus'
   template: '~this~.style.visibility = ~value~ ? "visible" : ""'
 
 - id: com.lightningkite.rx.android.exists
@@ -92,11 +88,10 @@
 
 - id: com.lightningkite.rx.android.exists
   type: set
-  reflectiveName:
-    pattern: viewExists
+  template:
+    pattern: viewExists.set(~this~, ~value~)
     imports:
       viewExists: '@lightningkite/rxjs-plus'
-  template: '~this~.hidden = !(~value~)'
 
 - id: com.lightningkite.rx.android.bind
   type: call
@@ -135,7 +130,7 @@
   type: call
   arguments: [CompoundButton]
   template:
-    pattern: '~this~.pipe(bind(~0~, "checked", "input"))'
+    pattern: '~this~.pipe(bind(~0~.input, "checked", "input"))'
     imports:
       bind: '@lightningkite/rxjs-plus'
 
@@ -143,7 +138,7 @@
   type: call
   arguments: [CompoundButton]
   template:
-    pattern: '~this~.pipe(bindNoUncheck(~0~))'
+    pattern: '~this~.pipe(bindNoUncheck(~0~.input))'
     imports:
       bindNoUncheck: '@lightningkite/rxjs-plus'
 
@@ -341,4 +336,7 @@
 - id: com.lightningkite.rx.android.replace
   receiver: View
   type: call
-  template: ~this~.replaceWith(~0~)
+  template:
+    pattern: replaceWithStyles(~this~, ~0~)
+    imports:
+      replaceWithStyles: '@lightningkite/rxjs-plus'

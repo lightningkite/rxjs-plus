@@ -231,12 +231,6 @@
     imports:
       showInSwap: '@lightningkite/rxjs-plus'
 
-- id: com.lightningkite.rx.viewgenerators.geocode
-  type: call
-  template:
-    pattern: geocode(~*~)
-    imports:
-      geocode: '@lightningkite/rxjs-plus'
 - id: com.lightningkite.rx.viewgenerators.requestLocation
   type: call
   template:

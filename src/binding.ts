@@ -19,9 +19,11 @@ import {
     withWrite
 } from "./plus";
 import {tap} from "rxjs/operators";
+import {elementEnabled} from "./android";
 
 export interface VirtualProperty<RECEIVER, T> {
     get(receiver: RECEIVER): T
+
     set(receiver: RECEIVER, value: T): any
 }
 
@@ -73,6 +75,7 @@ export function elementRemoved(element: HTMLElement): CompositeDisposable {
 }
 
 let mut: MutationObserver | undefined = undefined
+
 function mutSetup() {
     mut = new MutationObserver(list => {
         for (const event of list) {
@@ -89,32 +92,34 @@ function mutSetup() {
     })
 }
 
-export function subscribeAutoDispose<OWNER extends HTMLElement, VALUE>(owner: OWNER, action: (e: OWNER, v: VALUE) => void): (<O extends Observable<VALUE>>(obs: O) => O)
-export function subscribeAutoDispose<OWNER extends HTMLElement, KEY extends keyof OWNER>(owner: OWNER, key: KEY): (<O extends Observable<T>, T extends OWNER[KEY]>(obs: O) => O)
-export function subscribeAutoDispose<OWNER extends HTMLElement, VALUE>(owner: OWNER, key: VirtualProperty<OWNER, VALUE>): (<O extends Observable<T>, T extends VALUE>(obs: O) => O)
-export function subscribeAutoDispose<OWNER extends {readonly root: HTMLElement}, VALUE>(owner: OWNER, action: (e: OWNER, v: VALUE) => void): (<O extends Observable<VALUE>>(obs: O) => O)
-export function subscribeAutoDispose<OWNER extends {readonly root: HTMLElement}, KEY extends keyof OWNER>(owner: OWNER, key: KEY): (<O extends Observable<T>, T extends OWNER[KEY]>(obs: O) => O)
-export function subscribeAutoDispose<OWNER extends {readonly root: HTMLElement}, VALUE>(owner: OWNER, key: VirtualProperty<OWNER, VALUE>): (<O extends Observable<T>, T extends VALUE>(obs: O) => O)
-export function subscribeAutoDispose<OWNER extends HTMLElement, VALUE>(owner: OWNER, key: string | ((e: OWNER, v: VALUE) => void) | VirtualProperty<OWNER, VALUE>): (<O extends Observable<VALUE>>(obs: O) => O) {
-    const fixedOwner: HTMLElement = owner;//(owner instanceof HTMLElement) ? owner : owner.root
+export type DataClassProperty<T, V> = keyof { [P in keyof T as T[P] extends V ? P : never]: P } & keyof T & string;
+export type VirtualPropertyKeyOrAction<OWNER extends HTMLElement, VALUE> =
+    VirtualProperty<OWNER, VALUE>
+    | ((e: OWNER, v: VALUE) => void)
+    | DataClassProperty<OWNER, VALUE>
+
+export function subscribeAutoDispose<OWNER extends HTMLElement, VALUE>(owner: OWNER, key: VirtualPropertyKeyOrAction<OWNER, VALUE>): (<O extends Observable<VALUE>>(obs: O) => O) {
     switch (typeof key) {
         case "string":
             return property => {
-                elementRemoved(fixedOwner).parts.push(property.subscribe(value => {
+                elementRemoved(owner).parts.push(property.subscribe(value => {
                     (owner as any)[key] = value
+                    if (owner instanceof HTMLInputElement && key === "checked") {
+                        labelClassUpdate(owner)
+                    }
                 }))
                 return property
             }
         case "function":
             return property => {
-                elementRemoved(fixedOwner).parts.push(property.subscribe(value => {
+                elementRemoved(owner).parts.push(property.subscribe(value => {
                     key(owner, value)
                 }))
                 return property
             }
         default:
             return property => {
-                elementRemoved(fixedOwner).parts.push(property.subscribe(value => {
+                elementRemoved(owner).parts.push(property.subscribe(value => {
                     key.set(owner, value)
                 }))
                 return property
@@ -122,19 +127,19 @@ export function subscribeAutoDispose<OWNER extends HTMLElement, VALUE>(owner: OW
     }
 }
 
+function labelClassUpdate(input: HTMLInputElement) {
+    const parent = input.parentElement
+    if (parent instanceof HTMLLabelElement) {
+        if (input.checked) parent.classList.add("checked")
+        else parent.classList.remove("checked")
+    }
+}
+
+export type Binder<OWNER, VALUE> = VirtualProperty<OWNER, VALUE> | DataClassProperty<OWNER, VALUE>
+
 export function bind<OWNER extends HTMLElement, VALUE, EVENT extends keyof HTMLElementEventMap>(
     owner: OWNER,
-    virtualProperty: VirtualProperty<OWNER, VALUE>,
-    event: EVENT
-): (subject: Subject<VALUE>) => Subject<VALUE>
-export function bind<OWNER extends HTMLElement, KEY extends keyof OWNER, EVENT extends keyof HTMLElementEventMap>(
-    owner: OWNER,
-    key: KEY,
-    event: EVENT
-): (subject: Subject<OWNER[KEY]>) => Subject<OWNER[KEY]>
-export function bind<OWNER extends HTMLElement, VALUE, EVENT extends keyof HTMLElementEventMap>(
-    owner: OWNER,
-    key: string | VirtualProperty<OWNER, VALUE>,
+    key: Binder<OWNER, VALUE>,
     event: EVENT
 ): (subject: Subject<VALUE>) => Subject<VALUE> {
     if (typeof key === "string") {
@@ -142,24 +147,41 @@ export function bind<OWNER extends HTMLElement, VALUE, EVENT extends keyof HTMLE
             let suppress = false
             owner.addEventListener(event, () => {
                 if (!suppress) {
-                    suppress = true
-                    sub.next((owner as any)[key])
-                    suppress = false
+                    suppress = true;
+                    sub.next((owner as any)[key]);
+                    suppress = false;
                 }
             })
-            return subscribeAutoDispose(owner as any, key)(sub)
+            elementRemoved(owner).parts.push(sub.subscribe(value => {
+                if (!suppress) {
+                    suppress = true;
+                    (owner as any)[key] = value;
+                    if (owner instanceof HTMLInputElement && key === "checked") {
+                        labelClassUpdate(owner)
+                    }
+                    suppress = false;
+                }
+            }))
+            return sub
         }
     } else {
         return sub => {
             let suppress = false
             owner.addEventListener(event, () => {
                 if (!suppress) {
-                    suppress = true
-                    sub.next(key.get(owner))
-                    suppress = false
+                    suppress = true;
+                    sub.next(key.get(owner));
+                    suppress = false;
                 }
             })
-            return subscribeAutoDispose(owner, key)(sub)
+            elementRemoved(owner).parts.push(sub.subscribe(value => {
+                if (!suppress) {
+                    suppress = true;
+                    key.set(owner, value);
+                    suppress = false;
+                }
+            }))
+            return sub
         }
     }
 }
@@ -173,7 +195,8 @@ export function bindNoUncheck(element: HTMLInputElement): (subject: Subject<bool
                 if (element.checked) {
                     sub.next(true)
                 } else {
-                    element.checked = false
+                    element.checked = true
+                    labelClassUpdate(element)
                 }
                 suppress = false
             }
@@ -186,6 +209,7 @@ export function showIn<T>(
     parent: HTMLElement,
     makeChild: (prop: Observable<T>) => HTMLElement
 ): MonoTypeOperatorFunction<Array<T>> {
+    parent.classList.add("dynamic")
     return obs => {
         const children: Array<[HTMLElement, BehaviorSubject<T>]> = []
         elementRemoved(parent).parts.push(obs.subscribe(value => {
@@ -232,7 +256,7 @@ export function showInTyped<T>(
                     children[i][1].next(element)
                 } else {
                     const newThing = makeView(type, element)
-                    parent.replaceChild(children[i][0], newThing[0])
+                    children[i][0].replaceWith(newThing[0])
                     children[i] = newThing
                 }
             }
@@ -268,7 +292,7 @@ export function showInSelect<T>(select: HTMLSelectElement, selected: Subject<T>,
                 prop.pipe(
                     map(toString),
                     subscribeAutoDispose(option, "value"),
-                    subscribeAutoDispose(option, "textContent")
+                    subscribeAutoDispose(option, "innerText")
                 )
                 return option
             })
@@ -298,7 +322,7 @@ export function showInInput<T>(input: HTMLInputElement, selected: ((item: T) => 
                 prop.pipe(
                     map(toString),
                     subscribeAutoDispose(option, "value"),
-                    subscribeAutoDispose(option, "textContent")
+                    subscribeAutoDispose(option, "innerText")
                 )
                 return option
             })
@@ -325,7 +349,7 @@ export function makeDatalistForElement(element: HTMLElement): HTMLDataListElemen
 }
 
 export function showInPager<T>(
-    element: { root: HTMLElement, previous: HTMLElement, next: HTMLElement, container: HTMLElement },
+    element: HTMLElement & { previous: HTMLElement, next: HTMLElement, container: HTMLElement },
     selectedIndex: Subject<number> = new BehaviorSubject(0),
     makeView: (t: T) => HTMLElement
 ): MonoTypeOperatorFunction<Array<T>> {
@@ -348,22 +372,33 @@ export function showInPager<T>(
         )
         onThrottledEventDoWith(element.previous, "click", selectedIndex, x => {
             const n = Math.max(0, x - 1)
-            if(n != x) selectedIndex.next(n)
+            if (n != x) selectedIndex.next(n)
         })
         onThrottledEventDoWith(element.next, "click", obsWithIndex, x => {
             const n = Math.min(x[0].length - 1, x[1] + 1)
-            if(n != x[1]) selectedIndex.next(n)
+            if (n != x[1]) selectedIndex.next(n)
         })
         return obs
     }
 }
 
 export function onThrottledEventDo<T>(element: HTMLElement, eventName: string, action: () => void) {
-    fromEvent(element, eventName, ev => ev.preventDefault()).pipe(throttleTime(500), subscribeAutoDispose(element, action))
+    fromEvent(element, eventName).pipe(
+        tap(ev => {
+            ev.preventDefault()
+            ev.stopPropagation()
+        }),
+        throttleTime(500),
+        subscribeAutoDispose(element, action)
+    )
 }
 
 export function onThrottledEventDoWith<T>(element: HTMLElement, eventName: string, observable: Observable<T>, action: (t: T) => void) {
-    fromEvent(element, eventName, ev => ev.preventDefault()).pipe(
+    fromEvent(element, eventName).pipe(
+        tap(ev => {
+            ev.preventDefault()
+            ev.stopPropagation()
+        }),
         throttleTime(500),
         mergeMap(() => observable.pipe(take(1))),
         subscribeAutoDispose<HTMLElement, T>(element, (_, value) => action(value))
@@ -372,10 +407,14 @@ export function onThrottledEventDoWith<T>(element: HTMLElement, eventName: strin
 
 export const viewVisible: VirtualProperty<HTMLElement, boolean> = {
     get(receiver: HTMLElement): boolean {
-        return receiver.style.visibility == "visible"
+        return receiver.style.visibility != "hidden"
     },
     set(receiver: HTMLElement, value: boolean): any {
-        receiver.style.visibility = value ? "visible" : "hidden"
+        if (value) {
+            receiver.style.removeProperty("visibility")
+        } else {
+            receiver.style.visibility = "hidden"
+        }
     }
 }
 export const viewExists: VirtualProperty<HTMLElement, boolean> = {
@@ -384,22 +423,30 @@ export const viewExists: VirtualProperty<HTMLElement, boolean> = {
     },
     set(receiver: HTMLElement, value: boolean): any {
         receiver.hidden = !value
+        if (value) {
+            receiver.style.removeProperty("display")
+        } else {
+            receiver.style.display = "none"
+        }
     }
 }
 
-export type PathPartMid<T, V> = PropertyReference<T, V> | VirtualProperty<T, V> | ((t: T)=>V)
-export type PathPartEnding<T, V> = PropertyReference<T, V> | VirtualProperty<T, V> | ((t: T, v: V)=>void)
-export type PropertyReference<T, V> = keyof { [ P in keyof T as T[P] extends V ? P : never ] : P } & keyof T & string;
+export type PathPartMid<T, V> = PropertyReference<T, V> | VirtualProperty<T, V> | ((t: T) => V)
+export type PathPartEnding<T, V> = PropertyReference<T, V> | VirtualProperty<T, V> | ((t: T, v: V) => void)
+export type PropertyReference<T, V> = keyof { [P in keyof T as T[P] extends V ? P : never]: P } & keyof T & string;
 
 export function chain<A, B, C>(firstPart: PathPartMid<A, B>, secondPart: PathPartEnding<B, C>): VirtualProperty<A, C>
 export function chain<A, B, C, D>(firstPart: PathPartMid<A, B>, secondPart: PathPartMid<B, C>, thirdPart: PathPartEnding<C, D>): VirtualProperty<A, D>
-export function chain(...parts: Array<PathPartMid<any, any> | PathPartEnding<any, any>>): VirtualProperty<any, any> { return _chain(parts.slice(0, -1) as Array<PathPartMid<any, any>>, parts[parts.length - 1] as PathPartEnding<any, any>) }
+export function chain(...parts: Array<PathPartMid<any, any> | PathPartEnding<any, any>>): VirtualProperty<any, any> {
+    return _chain(parts.slice(0, -1) as Array<PathPartMid<any, any>>, parts[parts.length - 1] as PathPartEnding<any, any>)
+}
+
 function _chain(pathParts: Array<PathPartMid<any, any>>, last: PathPartEnding<any, any>): VirtualProperty<any, any> {
     return {
         get(receiver: HTMLElement): any {
             let current: any = receiver
-            for(const ref of pathParts) {
-                switch(typeof ref) {
+            for (const ref of pathParts) {
+                switch (typeof ref) {
                     case "function":
                         current = ref(current)
                         break
@@ -411,7 +458,7 @@ function _chain(pathParts: Array<PathPartMid<any, any>>, last: PathPartEnding<an
                         break
                 }
             }
-            switch(typeof last) {
+            switch (typeof last) {
                 case "string":
                     return current[last]
                 case "object":
@@ -420,8 +467,8 @@ function _chain(pathParts: Array<PathPartMid<any, any>>, last: PathPartEnding<an
         },
         set(receiver: HTMLElement, value: any): any {
             let current: any = receiver
-            for(const ref of pathParts) {
-                switch(typeof ref) {
+            for (const ref of pathParts) {
+                switch (typeof ref) {
                     case "function":
                         current = ref(current)
                         break
@@ -433,12 +480,15 @@ function _chain(pathParts: Array<PathPartMid<any, any>>, last: PathPartEnding<an
                         break
                 }
             }
-            switch(typeof last) {
+            switch (typeof last) {
                 case "function":
                     last(current, value)
                     break
                 case "string":
                     current[last] = value
+                    if (current instanceof HTMLInputElement && last === "checked") {
+                        labelClassUpdate(current)
+                    }
                     break
                 case "object":
                     last.set(current, value)
@@ -453,8 +503,9 @@ export function select<K extends keyof HTMLElementTagNameMap>(tagName: K): (elem
     return (element) => (element.tagName === tagName) ? (element as HTMLElementTagNameMap[K]) : element.getElementsByTagName(tagName)[0]
 }
 
-function test(value: Observable<string>, view: HTMLElement) {
+function test(value: Observable<string>, view: HTMLElement & { input: HTMLInputElement }) {
     value.pipe(subscribeAutoDispose(view, chain("style", "backgroundColor")))
+    value.pipe(map(x => x === "hi"), subscribeAutoDispose(view, chain("input", elementEnabled)))
 }
 
 export function buttonDate(type: HTMLInputElement["type"]): VirtualProperty<HTMLElement, Date> & { getInput(receiver: HTMLElement): HTMLInputElement }
@@ -474,7 +525,7 @@ export function buttonDate(type: HTMLInputElement["type"], defaultText?: string)
         },
         set(receiver: HTMLElement, value: Date | null): any {
             if (value === null) {
-                receiver.textContent = defaultText ?? ""
+                receiver.innerText = defaultText ?? ""
             } else {
                 this.getInput(receiver).valueAsDate = value
             }
@@ -490,7 +541,7 @@ export function swapViewSwap(view: HTMLElement, from: HTMLElement | null, to: HT
     const current = from
     if (to === current) {
         if (!to) {
-            view.hidden = true;
+            viewExists.set(view, false)
             view.innerHTML = "";
         }
         return;
@@ -509,7 +560,7 @@ export function swapViewSwap(view: HTMLElement, from: HTMLElement | null, to: HT
 
         //animate in
         if (to) {
-            view.hidden = false;
+            viewExists.set(view, true)
             const animationIn = `${animation}-in`
             let animInHandler: (ev: AnimationEvent) => void;
             animInHandler = (ev) => {
@@ -520,14 +571,14 @@ export function swapViewSwap(view: HTMLElement, from: HTMLElement | null, to: HT
             to.style.animation = `${animationIn} 0.25s` //Delay seems to make this work right
             view.appendChild(to);
         } else {
-            view.hidden = true;
+            viewExists.set(view, false)
             view.innerHTML = "";
         }
     } else if (to) {
         view.appendChild(to);
-        view.hidden = false;
+        viewExists.set(view, true)
     } else {
-        view.hidden = true;
+        viewExists.set(view, false)
         view.innerHTML = "";
     }
 }

@@ -8,7 +8,7 @@ export type ImageReference = { uri: File }
 export type ImageImageBitmap = { bitmap: ImageBitmap }
 export type ImageRaw = { raw: Blob }
 export type ImageRemoteUrl = { url: string }
-export type ImageResource = { cssClass: string }
+export type ImageResource = { name: string, file?: string }
 
 export type Video = VideoReference | VideoRemoteUrl
 export type VideoReference = { uri: File }
@@ -43,8 +43,8 @@ export function imageElementSet(imageView: HTMLImageElement, image: Image | null
         imageView.src = URL.createObjectURL(new Blob([image.raw]))
     } else if ('url' in image) {
         imageView.src = image.url
-    } else if ('cssClass' in image) {
-        imageView.src = "drawables/" + image.cssClass.substring(9)
+    } else if ('name' in image) {
+        imageView.src = image.file ?? ("drawables/" + image.name)
     }
 }
 
@@ -63,8 +63,8 @@ export function imageToBitmap(image: Image): Observable<ImageBitmap> {
             .pipe(mergeMap((x) => {
                 return createImageBitmap(x);
             }))
-    } else if ('cssClass' in image) {
-        return from(fetch("drawables/" + image.cssClass.substring(9)))
+    } else if ('name' in image) {
+        return from(fetch(image.file ?? ("drawables/" + image.name)))
             .pipe(mergeMap((x) => {
                 return x.blob()
             }))
@@ -91,13 +91,10 @@ export function videoElementSet(videoView: HTMLVideoElement, video: Video | null
     }
 }
 
-//! Declares com.lightningkite.butterfly.net.toHttpBody
+//! Declares com.lightningkite.rx.android.net.toBody
 export function imageToBody(this_: Image, maxDimension: number = 2048, maxBytes: number = 10_000_000): Observable<HttpBody> {
     return imageToBitmap(this_).pipe(
-        mergeMap((x) => resize(x, maxDimension)),
-        map((x) => {
-            return { data: x, type: "image/png"}
-        })
+        mergeMap((x) => resize(x, maxDimension))
     )
 }
 

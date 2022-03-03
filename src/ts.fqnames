@@ -22,7 +22,6 @@ com.lightningkite.rx.android.resources.VideoReference
 com.lightningkite.rx.android.resources.VideoRemoteUrl
 com.lightningkite.rx.viewgenerators.AccessibleActivity
 com.lightningkite.rx.viewgenerators
-com.lightningkite.rx.viewgenerators.geocode
 com.lightningkite.rx.viewgenerators.ActivityAccess
 com.lightningkite.rx.viewgenerators.startIntent
 com.lightningkite.rx.viewgenerators.share

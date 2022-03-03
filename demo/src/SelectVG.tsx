@@ -6,6 +6,7 @@ import {
 } from '@lightningkite/rxjs-plus'
 import {BindTestVG} from "./BindTestVG";
 import {map, of, take} from "rxjs";
+import {ListTestVG} from "./ListTestVG";
 
 export class SelectVG implements ViewGenerator {
     private stack: HasValueSubject<Array<ViewGenerator>>
@@ -17,10 +18,7 @@ export class SelectVG implements ViewGenerator {
 
     demos = of<Array<[string, ()=>ViewGenerator]>>([
         ["Bind Test", () => new BindTestVG()],
-        ["Bind Test", () => new BindTestVG()],
-        ["Bind Test", () => new BindTestVG()],
-        ["Bind Test", () => new BindTestVG()],
-        ["Bind Test", () => new BindTestVG()],
+        ["List Test", () => new ListTestVG()],
     ])
 
     generate(window: Window): HTMLElement {

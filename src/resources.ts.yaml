@@ -90,8 +90,17 @@
 
 - type: call
   id: com.lightningkite.rx.android.resources.setText
-  reflectiveName: '"textContent"'
-  template: '~this~.textContent = ~0~'
+  reflectiveName: '"innerText"'
+  template: '~this~.innerText = ~0~'
+
+- type: call
+  id: com.lightningkite.rx.android.resources.setText
+  actualReceiver: CompoundButton
+  reflectiveName:
+    pattern: 'chain("label", "innerText")'
+    imports:
+      chain: '@lightningkite/rxjs-plus'
+  template: '~this~.label.innerText = ~0~'
 
 - type: call
   id: com.lightningkite.rx.viewgenerators.getColor
@@ -131,7 +140,7 @@
 - type: "call"
   id: "com.lightningkite.rx.android.resources.asImage"
   receiver: "kotlin.Int"
-  template: "{ cssClass: ~this~ }"
+  template: "~this~"
 
 
 - type: "call"
@@ -152,7 +161,7 @@
 
 - type: "call"
   id: "com.lightningkite.rx.android.resources.ImageResource"
-  template: "{ cssClass: ~0~ }"
+  template: "~0~"
 
 
 - type: call
@@ -180,6 +189,26 @@
     pattern: 'imageElementSet(~this~, ~0~)'
     imports:
       imageElementSet: '@lightningkite/rxjs-plus'
+
+- type: call
+  id: com.lightningkite.rx.android.resources.setImage
+  actualReceiver: ImageButton
+  reflectiveName:
+    pattern: 'chain("image", imageElementSet)'
+    imports:
+      chain: '@lightningkite/rxjs-plus'
+      imageElementSet: '@lightningkite/rxjs-plus'
+  template:
+    pattern: 'imageElementSet(~this~.image, ~0~)'
+    imports:
+      imageElementSet: '@lightningkite/rxjs-plus'
+
+- type: call
+  id: com.lightningkite.rx.android.resources.load
+  template:
+    pattern: 'imageToBitmap(~this~)'
+    imports:
+      imageToBitmap: '@lightningkite/rxjs-plus'
 
 - type: call
   id: com.lightningkite.rx.android.resources.setVideo

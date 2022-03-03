@@ -4,7 +4,18 @@
 
 - id: com.lightningkite.rx.subscribeByNullable
   type: call
-  template: ~this~.subscribe(~0~)
+  receiver: io.reactivex.rxjava3.core.Observable
+  template: ~this~.subscribe(~onNext~, ~onError~, ~onComplete~)
+
+- id: com.lightningkite.rx.subscribeByNullable
+  type: call
+  receiver: io.reactivex.rxjava3.core.Single
+  template: ~this~.subscribe(~onSuccess~, ~onError~)
+
+- id: com.lightningkite.rx.subscribeByNullable
+  type: call
+  receiver: io.reactivex.rxjava3.core.Maybe
+  template: ~this~.subscribe(~onSuccess~, ~onError~)
 
 - id: com.lightningkite.rx.isEqualTo
   type: call
@@ -297,8 +308,22 @@
     imports:
       switchMapNotNull: '@lightningkite/rxjs-plus'
 
+- id: com.lightningkite.rx.flatMapNotNull2
+  type: call
+  template:
+    pattern: '~this~.pipe(mergeMapNotNull(~0~))'
+    imports:
+      mergeMapNotNull: '@lightningkite/rxjs-plus'
+
+- id: com.lightningkite.rx.switchMapNotNull2
+  type: call
+  template:
+    pattern: '~this~.pipe(switchMapNotNull(~0~))'
+    imports:
+      switchMapNotNull: '@lightningkite/rxjs-plus'
+
 - id: com.lightningkite.rx.combineLatest
-  reciever: Observable
+  receiver: Observable
   type: call
   template:
     pattern: '~this~.pipe(combineLatestWith(~0~), mapCall(~1~))'
@@ -307,7 +332,7 @@
       mapCall: '@lightningkite/rxjs-plus'
 
 - id: com.lightningkite.rx.combineLatest
-  reciever: List
+  receiver: List
   type: call
   template:
     pattern: 'combineLatest(~this~, ~0~)'
@@ -315,7 +340,7 @@
       combineLatest: rxjs
 
 - id: com.lightningkite.rx.combineLatest
-  reciever: List
+  receiver: List
   arguments: []
   type: call
   template:

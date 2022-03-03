@@ -6,7 +6,7 @@ import {bind, onThrottledEventDo, showIn, showInSelect, subscribeAutoDispose, vi
 export function test(element: HTMLParagraphElement, field: HTMLTextAreaElement, div: HTMLDivElement, field2: HTMLInputElement) {
     of(128).pipe(
         map(x => `value = ${x}`),
-        subscribeAutoDispose(element, "textContent")
+        subscribeAutoDispose(element, "innerText")
     )
     new BehaviorSubject(18).pipe(
         mapReversible(plusNumber(1)),
@@ -18,7 +18,7 @@ export function test(element: HTMLParagraphElement, field: HTMLTextAreaElement, 
         map(x => x.map(y => `Item ${y}`)),
         showIn(div, prop => {
             const child = document.createElement("p")
-            prop.pipe(subscribeAutoDispose(child, "textContent"))
+            prop.pipe(subscribeAutoDispose(child, "innerText"))
             return child
         })
     )

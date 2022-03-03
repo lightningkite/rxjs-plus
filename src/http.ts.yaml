@@ -1,9 +1,6 @@
 - id: okhttp3.RequestBody
   type: type
-  template:
-    pattern: HttpBody
-    imports:
-      HttpBody: '@lightningkite/rxjs-plus'
+  template: 'Blob'
 
 - id: com.lightningkite.rx.okhttp.HttpResponse
   type: type
@@ -206,13 +203,13 @@
   receiver: String
   arguments: ["*"]
   type: call
-  template: '{ data: ~this~, type: "text/plain" }'
+  template: 'new Blob([~this~], { type: "text/plain" })'
 
 - id: okhttp3.RequestBody.Companion.toRequestBody
   receiver: String
   arguments: ["*", "*"]
   type: call
-  template: '{ data: ~this~, type: ~0~ }'
+  template: 'new Blob([~this~], { type: ~0~ })'
 
 - id: com.lightningkite.rx.okhttp.toRequestBody
   receiver: Image
@@ -280,4 +277,11 @@
 - id: okhttp3.MultipartBody.Part.Companion.createFormData
   type: call
   arguments: [String, String, RequestBody]
-  template: '[~0~, ~2~.data, ~1~]'
+  template: '[~0~, ~2~, ~1~]'
+
+- id: com.lightningkite.rx.okhttp.toRequestBody
+  type: call
+  receiver: Uri
+  template:
+    pattern: of(~this~)
+    imports:

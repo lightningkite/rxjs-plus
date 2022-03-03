@@ -1197,7 +1197,7 @@ function appendChild(parent: Node, child: any) {
                     appendChild(parent, value);
                 }
             } else if(child instanceof Observable) {
-                child.pipe(subscribeAutoDispose(parent as HTMLElement, "textContent"))
+                child.pipe(subscribeAutoDispose(parent as HTMLElement, "innerText"))
             } else if(child instanceof ChildrenBinder) {
                 child.bind.pipe(showIn(parent as HTMLElement, child.to))
             } else {

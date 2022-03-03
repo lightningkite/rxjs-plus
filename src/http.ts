@@ -79,10 +79,7 @@ export interface HttpOptions {
     cacheMode: RequestCache;
 }
 
-export interface HttpBody {
-    data: BodyInit,
-    type: string
-}
+export type HttpBody = Blob | FormData
 
 export class HttpClient {
     public static INSTANCE = new HttpClient();
@@ -109,11 +106,8 @@ export class HttpClient {
         options: HttpOptions = this.defaultOptions
     ): Observable<Response> {
         let h = new Array(...headers.entries());
-        if (body !== null && body.type !== "multipart/form-data") {
-            h.push(["Content-Type", body.type]);
-        }
         return from(fetch(url, {
-            body: body?.data,
+            body: body,
             cache: options.cacheMode,
             credentials: "omit",
             headers: h,
@@ -152,10 +146,15 @@ export interface WebSocketInterface {
 
 export class ConnectedWebSocket implements WebSocketInterface, Unsubscribable {
     public static implementsInterfaceIoReactivexObserver = true;
+    public static debug: boolean = false
     public readonly url: string;
+    private readonly debugUrl: string;
 
     public constructor(url: string) {
         this.url = url;
+        let index = url.indexOf("?")
+        if (index === -1) index = url.length
+        this.debugUrl = url.substring(0, index)
         this.resetSocket();
     }
 
@@ -167,10 +166,16 @@ export class ConnectedWebSocket implements WebSocketInterface, Unsubscribable {
         const parent = this;
         newSocket.binaryType = "blob";
         newSocket.addEventListener("open", (event) => {
+            if (ConnectedWebSocket.debug) {
+                console.log(`Socket to ${this.debugUrl} opened`)
+            }
             parent.ownConnection.next(this);
         });
         newSocket.addEventListener("error", (event) => {
             if (!closed) {
+                if (ConnectedWebSocket.debug) {
+                    console.log(`Socket to ${this.debugUrl} errored with event `, event)
+                }
                 this.closed = true;
                 parent.ownConnection.error(event);
                 parent.read.error(event);
@@ -178,6 +183,9 @@ export class ConnectedWebSocket implements WebSocketInterface, Unsubscribable {
         });
         newSocket.addEventListener("close", (event) => {
             if (!closed) {
+                if (ConnectedWebSocket.debug) {
+                    console.log(`Socket to ${this.debugUrl} shut down with event `, event)
+                }
                 this.closed = true;
                 if (event.code == 1000) {
                     parent.ownConnection.complete();
@@ -191,6 +199,9 @@ export class ConnectedWebSocket implements WebSocketInterface, Unsubscribable {
         newSocket.addEventListener("message", (event: MessageEvent) => {
             const d = event.data;
             if (typeof d === "string") {
+                if (ConnectedWebSocket.debug) {
+                    console.log(`Socket to ${this.debugUrl} got `, d)
+                }
                 parent.read.next({binary: null, text: d});
             } else {
                 parent.read.next({binary: d as Blob, text: null})
@@ -234,22 +245,22 @@ export function fromJSON<TYPE>(type: Array<any>): OperatorFunction<Response, TYP
 }
 
 export namespace HttpBody {
-    export function json<T>(value: T): HttpBody {
-        return {
-            data: JSON.stringify(value),
-            type: 'application/json'
-        }
+    export function json<T>(value: T): Blob {
+        return new Blob([JSON.stringify(value)], {type: 'application/json'})
     }
+
     export type MultipartBodyPart = []
-    export function multipart(...parts: Array<[string, string | Blob, string?]>): HttpBody {
+
+    export function multipart(...parts: Array<[string, Blob, string?] | [string, string]>): Blob | FormData {
         const data = new FormData()
-        for(const part of parts) {
-            data.append(...part)
+        for (const part of parts) {
+            if (typeof part[1] === "string") {
+                data.append(part[0], part[1])
+            } else {
+                data.append(part[0], part[1], part[2])
+            }
         }
-        return {
-            data: data,
-            type: 'multipart/form-data'
-        }
+        return data
     }
 }
 
@@ -262,31 +273,43 @@ export namespace JSON2 {
 }
 
 export function parseObject<TYPE>(item: any, asType: ReifiedType<TYPE>): TYPE {
+    if (item === undefined) return undefined as unknown as TYPE
+    if (item === null) return null as unknown as TYPE
+    switch (asType[0]) {
+        case String:
+        case Number:
+        case Boolean:
+            return item
+        case Date:
+            return new Date(item as string) as unknown as TYPE;
+        case Array:
+            return (item as Array<any>).map(x => parseObject(x, asType[1])) as unknown as TYPE
+        case Set:
+            return new Set((item as Array<any>).map(x => parseObject(x, asType[1]))) as unknown as TYPE
+        case Map:
+            let asObj = item as object;
+            let map = new Map<any, any>();
+            if (asType[1] === String) {
+                for (const key of Object.keys(asObj)) {
+                    map.set(key, parseObject((asObj as any)[key], asType[2]));
+                }
+            } else {
+                for (const key of Object.keys(asObj)) {
+                    map.set(parseObject(key, asType[1]), parseObject((asObj as any)[key], asType[2]));
+                }
+            }
+            return map as unknown as TYPE;
+    }
     const parser = asType[0].fromJSON as (item: any, typeArguments: Array<ReifiedType>) => any
     if (typeof parser !== "function") {
-        console.log(asType[0])
         throw Error(`Type ${asType[0]} has no function fromJSON!`)
     }
     return parser(item, asType.slice(1))
 }
 
-(String as any).fromJSON = (value: any) => value;
-(Number as any).fromJSON = (value: any) => typeof value === "string" ? parseFloat(value) : value;
-(Boolean as any).fromJSON = (value: any) => typeof value === "string" ? value === "true" : value;
-(Array as any).fromJSON = (value: any, typeArguments: Array<ReifiedType>) => { return (value as Array<any>).map(x => parseObject(x, typeArguments[0])) };
-(Map as any).fromJSON = (value: any, typeArguments: Array<ReifiedType>) => {
-    let asObj = value as object;
-    let map = new Map<any, any>();
-    if (typeArguments[0][0] === String) {
-        for (const key of Object.keys(asObj)) {
-            map.set(key, parseObject((asObj as any)[key], typeArguments[1]));
-        }
-    } else {
-        for (const key of Object.keys(asObj)) {
-            map.set(parseObject(key, typeArguments[0]), parseObject((asObj as any)[key], typeArguments[1]));
-        }
-    }
-    return map;
+(Map.prototype as any).toJSON = function (this: Map<any, any>) {
+    return Object.fromEntries(this)
 };
-(Date as any).fromJSON = (value: any) => new Date(value as string);
-(Map as any).toJSON = (value: Map<any, any>) => Object.fromEntries(value);
+(Set.prototype as any).toJSON = function (this: Map<any, any>) {
+    return [...this]
+};
