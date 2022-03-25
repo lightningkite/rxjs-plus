@@ -1,6 +1,7 @@
 import {bind, subscribeAutoDispose, ViewGenerator} from '@lightningkite/rxjs-plus'
 import html from './BindTestVG.html'
-import {BehaviorSubject, map} from "rxjs";
+import {BehaviorSubject, debounceTime, delay, map} from "rxjs";
+import {elementRemoved} from "../../src";
 
 export class BindTestVG implements ViewGenerator {
     prop = new BehaviorSubject("")
@@ -8,11 +9,57 @@ export class BindTestVG implements ViewGenerator {
 
     generate(window: Window): HTMLElement {
         return <div>
-            <label for="test-input">Test Input: </label>
-            <input id="test-input" class="test-input" type="text" bind2-value-input={this.prop}/>
-            <p class="test-output">{this.prop.pipe(
-                map(x => `You entered ${x}`),
-            )}</p>
+            <div>
+                <h2>RxPlus + JSX shortcuts</h2>
+                <label>Test Input:
+                    <input class="test-input" type="text" bind2-value-input={this.prop}/>
+                </label>
+                <p class="test-output">{this.prop.pipe(map(it => `You entered ${it}`))}</p>
+            </div>
+            <div>
+                <h2>RxPlus shortcuts</h2>
+                <label>Test Input:
+                    <input class="test-input" type="text" ref={view => {
+                        this.prop.pipe(
+                            bind(view, "value", "input")
+                        )
+                    }}/>
+                </label>
+                <p class="test-output" ref={view => {
+                    this.prop.pipe(
+                        map(it => `You entered ${it}`),
+                        subscribeAutoDispose(view, "innerText")
+                    )
+                }}/>
+            </div>
+            <div>
+                <h2>Classic Rx style</h2>
+                <label>Test Input:
+                    <input class="test-input" type="text" ref={view => {
+                        elementRemoved(view).parts.push(
+                            this.prop.subscribe({
+                                next(it) {
+                                    view.value = it
+                                }
+                            })
+                        )
+                        view.addEventListener("input", ev => {
+                            this.prop.next(view.value)
+                        })
+                    }}/>
+                </label>
+                <p class="test-output" ref={view => {
+                    elementRemoved(view).parts.push(
+                        this.prop.pipe(
+                            map(it => `You entered ${it}`)
+                        ).subscribe({
+                            next(it) {
+                                view.innerText = it
+                            }
+                        })
+                    )
+                }}/>
+            </div>
         </div>
     }
 }

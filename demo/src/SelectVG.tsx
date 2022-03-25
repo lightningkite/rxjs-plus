@@ -7,6 +7,7 @@ import {
 import {BindTestVG} from "./BindTestVG";
 import {map, of, take} from "rxjs";
 import {ListTestVG} from "./ListTestVG";
+import {HackernewsVG} from "./HackernewsVG";
 
 export class SelectVG implements ViewGenerator {
     private stack: HasValueSubject<Array<ViewGenerator>>
@@ -19,6 +20,7 @@ export class SelectVG implements ViewGenerator {
     demos = of<Array<[string, ()=>ViewGenerator]>>([
         ["Bind Test", () => new BindTestVG()],
         ["List Test", () => new ListTestVG()],
+        ["Hackernews Test", () => new HackernewsVG()],
     ])
 
     generate(window: Window): HTMLElement {
