@@ -8,7 +8,7 @@ import {
     Subscription, switchMap, take, throttleTime,
     Unsubscribable
 } from 'rxjs'
-import {plusNumber} from "./operatorReferenceShorthand";
+import { plusNumber } from "./operatorReferenceShorthand";
 import {
     DisposableLambda,
     intToString,
@@ -18,8 +18,9 @@ import {
     safeEq,
     withWrite
 } from "./plus";
-import {tap} from "rxjs/operators";
-import {elementEnabled} from "./android";
+import { tap } from "rxjs/operators";
+import { elementEnabled } from "./android";
+import { TransitionTriple } from "./transitions"
 
 export interface VirtualProperty<RECEIVER, T> {
     get(receiver: RECEIVER): T
@@ -361,10 +362,13 @@ export function showInPager<T>(
             map(([list, index]) => [list[index], index] as [T, number]),
             subscribeAutoDispose(element, (container, [value, index]) => {
                 const newView = makeView(value)
-                swapViewSwap(container.container, current, newView,
-                    index > pastIndex ? 'stack-push'
-                        : index < pastIndex ? 'stack-pop'
-                            : 'stack-fade'
+                swapViewSwap(
+                    container.container,
+                    current,
+                    newView,
+                    index > pastIndex ? TransitionTriple.Companion.INSTANCE.PUSH
+                        : index < pastIndex ? TransitionTriple.Companion.INSTANCE.POP
+                            : TransitionTriple.Companion.INSTANCE.FADE
                 )
                 current = newView
                 pastIndex = index
@@ -533,52 +537,82 @@ export function buttonDate(type: HTMLInputElement["type"], defaultText?: string)
     }
 }
 
-export function swapViewSwap(view: HTMLElement, from: HTMLElement | null, to: HTMLElement | null, animation: string) {
-    if (to) {
-        to.style.width = "100%";
-        to.style.height = "100%";
-    }
-    const current = from
-    if (to === current) {
-        if (!to) {
-            viewExists.set(view, false)
-            view.innerHTML = "";
-        }
-        return;
-    }
-    if (current) {
-        //animate out
-        const animationOut = `${animation}-out`
-        window.setTimeout(() => {
-            try {
-                view.removeChild(current);
-            } catch (e) {
-                /*squish*/
-            }
-        }, 250)
-        current.style.animation = `${animationOut} 0.25s`
+export function swapViewSwap(view: HTMLElement, from: HTMLElement | null, to: HTMLElement | null, animation: TransitionTriple) {
 
-        //animate in
-        if (to) {
-            viewExists.set(view, true)
-            const animationIn = `${animation}-in`
-            let animInHandler: (ev: AnimationEvent) => void;
-            animInHandler = (ev) => {
-                to.onanimationend = null;
-                to.style.removeProperty("animation");
-            }
-            to.addEventListener("animationend", animInHandler)
-            to.style.animation = `${animationIn} 0.25s` //Delay seems to make this work right
-            view.appendChild(to);
-        } else {
-            viewExists.set(view, false)
-            view.innerHTML = "";
-        }
-    } else if (to) {
-        view.appendChild(to);
+    const newView = to ?? document.createElement("div")
+    const current = from
+    newView.style.width = "100%"
+    newView.style.height = "100%"
+
+    if (to) {
         viewExists.set(view, true)
-    } else {
-        viewExists.set(view, false)
-        view.innerHTML = "";
     }
+
+    //animate out
+    if (current) {
+        const animationOut = animation.exit
+        let outAnimInHandler: (ev: AnimationEvent) => void;
+        outAnimInHandler = (ev) => {
+            current.onanimationend = null
+            current.style.removeProperty("animation")
+            view.removeChild(current)
+        }
+        current.addEventListener("animationend", outAnimInHandler)
+        current.style.animation = `${animationOut} 0.25s`
+    }
+
+    //animate in
+    const animationIn = animation.enter
+    let animInHandler: (ev: AnimationEvent) => void;
+    animInHandler = (ev) => {
+        newView.onanimationend = null
+        newView.style.removeProperty("animation")
+        if (!to) {
+            view.removeChild(newView)
+            viewExists.set(view, false)
+        }
+    }
+    newView.addEventListener("animationend", animInHandler)
+    newView.style.animation = `${animationIn} 0.25s` //Delay seems to make this work right
+    view.appendChild(newView)
+
+
+    // if (current) {
+    //     //animate out
+    //     const animationOut = animation.exit
+    //     console.log(`Animating out with ${animationOut}`)
+    //     window.setTimeout(() => {
+    //         try {
+    //             view.removeChild(current);
+    //         } catch (e) {
+    //             /*squish*/
+    //         }
+    //     }, 250)
+    //     current.style.animation = `${animationOut} 0.25s`
+
+
+    //     //animate in
+    //     if (to) {
+    //         viewExists.set(view, true)
+    //         const animationIn = animation.enter
+    //         console.log(`Animating out with ${animationIn}`)
+    //         let animInHandler: (ev: AnimationEvent) => void;
+    //         animInHandler = (ev) => {
+    //             to.onanimationend = null;
+    //             to.style.removeProperty("animation");
+    //         }
+    //         to.addEventListener("animationend", animInHandler)
+    //         to.style.animation = `${animationIn} 0.25s` //Delay seems to make this work right
+    //         view.appendChild(to);
+    //     } else {
+    //         viewExists.set(view, false)
+    //         view.innerHTML = "";
+    //     }
+    // } else if (to) {
+    //     view.appendChild(to);
+    //     viewExists.set(view, true)
+    // } else {
+    //     viewExists.set(view, false)
+    //     view.innerHTML = "";
+    // }
 }
