@@ -576,43 +576,4 @@ export function swapViewSwap(view: HTMLElement, from: HTMLElement | null, to: HT
     newView.style.animation = `${animationIn} 0.25s` //Delay seems to make this work right
     view.appendChild(newView)
 
-
-    // if (current) {
-    //     //animate out
-    //     const animationOut = animation.exit
-    //     console.log(`Animating out with ${animationOut}`)
-    //     window.setTimeout(() => {
-    //         try {
-    //             view.removeChild(current);
-    //         } catch (e) {
-    //             /*squish*/
-    //         }
-    //     }, 250)
-    //     current.style.animation = `${animationOut} 0.25s`
-
-
-    //     //animate in
-    //     if (to) {
-    //         viewExists.set(view, true)
-    //         const animationIn = animation.enter
-    //         console.log(`Animating out with ${animationIn}`)
-    //         let animInHandler: (ev: AnimationEvent) => void;
-    //         animInHandler = (ev) => {
-    //             to.onanimationend = null;
-    //             to.style.removeProperty("animation");
-    //         }
-    //         to.addEventListener("animationend", animInHandler)
-    //         to.style.animation = `${animationIn} 0.25s` //Delay seems to make this work right
-    //         view.appendChild(to);
-    //     } else {
-    //         viewExists.set(view, false)
-    //         view.innerHTML = "";
-    //     }
-    // } else if (to) {
-    //     view.appendChild(to);
-    //     viewExists.set(view, true)
-    // } else {
-    //     viewExists.set(view, false)
-    //     view.innerHTML = "";
-    // }
 }
