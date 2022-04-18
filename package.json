@@ -1,6 +1,6 @@
 {
   "name": "@lightningkite/rxjs-plus",
-  "version": "0.9.2",
+  "version": "0.10.0",
   "description": "RxJs tools for binding data to HTML elements",
   "main": "index.js",
   "types": "index.d.ts",
@@ -45,6 +45,7 @@
     "jsx-runtime.d.ts",
     "index.js",
     "index.d.ts",
+    "index.scss",
     "dist",
     "src/**/*.ts.yaml",
     "src/**/*ts.fqnames"
