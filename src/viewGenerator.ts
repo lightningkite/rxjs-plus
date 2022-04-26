@@ -1,6 +1,6 @@
 import { HasValueSubject } from "./plus";
 import { v4 as uuidv4 } from 'uuid';
-import { BehaviorSubject, bindCallback, MonoTypeOperatorFunction, Observable, Subject } from "rxjs";
+import { BehaviorSubject, bindCallback, debounceTime, interval, MonoTypeOperatorFunction, Observable, of, pipe, Subject } from "rxjs";
 import { subscribeAutoDispose, swapViewSwap } from "./binding";
 import { TransitionTriple, StackTransition, isUsesCustomTransition, UsesCustomTransition } from "./transitions";
 
@@ -427,9 +427,9 @@ export function showInSwap<T extends ViewGenerator>(
 
 function tryCastPrimitive<T>(item: any | null, key: string): T | null {
   if (typeof item === key) {
-      return item as T;
+    return item as T;
   } else {
-      return null;
+    return null;
   }
 }
 
@@ -441,14 +441,14 @@ export function showInSwapCustom<T extends ViewGenerator>(
   let currentView: HTMLElement | null = null
   let currentGenerator: ViewGenerator | null = null
   let previousStackSize = 0;
-  return subscribeAutoDispose<HTMLDivElement, Array<T>>(parent, (element, value) => {
+  return pipe(debounceTime(50), subscribeAutoDispose<HTMLDivElement, Array<T>>(parent, (element, value) => {
     let newGenerator = value[value.length - 1] ?? null
     let newStackSize = value.length
     if (currentGenerator === newGenerator) return
     const nextView = newGenerator?.generate(dependency) ?? null
 
     let transition = stackTransition.neutral
-    if(previousStackSize === 0){
+    if (previousStackSize === 0) {
       transition = tryCastPrimitive<UsesCustomTransition>(newGenerator, typeof newGenerator)?.transition?.neutral ?? stackTransition.neutral
     } else if (newStackSize === 0) {
       transition = tryCastPrimitive<UsesCustomTransition>(currentGenerator, typeof currentGenerator)?.transition?.pop ?? stackTransition.pop
@@ -465,7 +465,7 @@ export function showInSwapCustom<T extends ViewGenerator>(
     currentView = nextView
     currentGenerator = newGenerator
     previousStackSize = newStackSize
-  })
+  }))
 }
 
 export function replaceWithStyles(oldElement: HTMLElement, newElement: HTMLElement) {
