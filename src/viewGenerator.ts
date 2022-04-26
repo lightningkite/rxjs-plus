@@ -441,7 +441,7 @@ export function showInSwapCustom<T extends ViewGenerator>(
   let currentView: HTMLElement | null = null
   let currentGenerator: ViewGenerator | null = null
   let previousStackSize = 0;
-  return pipe(debounceTime(50), subscribeAutoDispose<HTMLDivElement, Array<T>>(parent, (element, value) => {
+  return subscribeAutoDispose<HTMLDivElement, Array<T>>(parent, (element, value) => {
     let newGenerator = value[value.length - 1] ?? null
     let newStackSize = value.length
     if (currentGenerator === newGenerator) return
@@ -465,7 +465,7 @@ export function showInSwapCustom<T extends ViewGenerator>(
     currentView = nextView
     currentGenerator = newGenerator
     previousStackSize = newStackSize
-  }))
+  })
 }
 
 export function replaceWithStyles(oldElement: HTMLElement, newElement: HTMLElement) {

@@ -539,14 +539,7 @@ export function buttonDate(type: HTMLInputElement["type"], defaultText?: string)
 
 export function swapViewSwap(view: HTMLElement, from: HTMLElement | null, to: HTMLElement | null, animation: TransitionTriple) {
 
-    const newView = to ?? document.createElement("div")
     const current = from
-    newView.style.width = "100%"
-    newView.style.height = "100%"
-
-    if (to) {
-        viewExists.set(view, true)
-    }
 
     //animate out
     if (current) {
@@ -556,24 +549,30 @@ export function swapViewSwap(view: HTMLElement, from: HTMLElement | null, to: HT
             current.onanimationend = null
             current.style.removeProperty("animation")
             view.removeChild(current)
+            if(!to && view.childElementCount === 0){
+                viewExists.set(view, false)
+            }
         }
         current.addEventListener("animationend", outAnimInHandler)
         current.style.animation = `${animationOut} 0.25s`
     }
 
     //animate in
-    const animationIn = animation.enter
-    let animInHandler: (ev: AnimationEvent) => void;
-    animInHandler = (ev) => {
-        newView.onanimationend = null
-        newView.style.removeProperty("animation")
-        if (!to) {
-            view.removeChild(newView)
-            viewExists.set(view, false)
+    const newView = to
+    if (newView) {
+        viewExists.set(view, true)
+        newView.style.width = "100%"
+        newView.style.height = "100%"
+        const animationIn = animation.enter
+        let animInHandler: (ev: AnimationEvent) => void;
+        animInHandler = (ev) => {
+            newView.onanimationend = null
+            newView.style.removeProperty("animation")
+            viewExists.set(view, true)
         }
+        newView.addEventListener("animationend", animInHandler)
+        newView.style.animation = `${animationIn} 0.25s` //Delay seems to make this work right
+        view.appendChild(newView)
     }
-    newView.addEventListener("animationend", animInHandler)
-    newView.style.animation = `${animationIn} 0.25s` //Delay seems to make this work right
-    view.appendChild(newView)
 
 }
