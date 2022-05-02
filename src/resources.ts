@@ -98,7 +98,7 @@ export function imageToBody(this_: Image, maxDimension: number = 2048, maxBytes:
     )
 }
 
-function resize(image: ImageBitmap, maxDimension: number = 2048): Observable<Blob> {
+function resize(image: ImageBitmap, maxDimension: number): Observable<Blob> {
     return new Observable((em) => {
         try {
             let canvasElement = document.createElement("canvas");
@@ -113,7 +113,7 @@ function resize(image: ImageBitmap, maxDimension: number = 2048): Observable<Blo
             const ctx = canvasElement.getContext("2d");
             if (ctx) {
                 ctx.clearRect(0, 0, canvasElement.width, canvasElement.height);
-                ctx.drawImage(image, 0, 0);
+                ctx.drawImage(image, 0, 0, image.width, image.height, 0,0, canvasElement.width, canvasElement.height);
             }
             canvasElement.toBlob((x) => {
                 if (x) {

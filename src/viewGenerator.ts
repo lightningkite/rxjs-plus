@@ -459,8 +459,6 @@ export function showInSwapCustom<T extends ViewGenerator>(
     } else {
       transition = tryCastPrimitive<UsesCustomTransition>(newGenerator, typeof newGenerator)?.transition?.neutral ?? stackTransition.neutral
     }
-
-    console.log(transition.enter, transition.exit)
     swapViewSwap(parent, currentView, nextView, transition)
     currentView = nextView
     currentGenerator = newGenerator

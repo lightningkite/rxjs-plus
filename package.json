@@ -1,6 +1,6 @@
 {
   "name": "@lightningkite/rxjs-plus",
-  "version": "0.10.2",
+  "version": "0.10.3",
   "description": "RxJs tools for binding data to HTML elements",
   "main": "index.js",
   "types": "index.d.ts",
