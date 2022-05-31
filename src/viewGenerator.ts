@@ -441,29 +441,32 @@ export function showInSwapCustom<T extends ViewGenerator>(
   let currentView: HTMLElement | null = null
   let currentGenerator: ViewGenerator | null = null
   let previousStackSize = 0;
-  return subscribeAutoDispose<HTMLDivElement, Array<T>>(parent, (element, value) => {
-    let newGenerator = value[value.length - 1] ?? null
-    let newStackSize = value.length
-    if (currentGenerator === newGenerator) return
-    const nextView = newGenerator?.generate(dependency) ?? null
+  return pipe(
+    debounceTime(50),
+    subscribeAutoDispose<HTMLDivElement, Array<T>>(parent, (element, value) => {
+      let newGenerator = value[value.length - 1] ?? null
+      let newStackSize = value.length
+      if (currentGenerator === newGenerator) return
+      const nextView = newGenerator?.generate(dependency) ?? null
 
-    let transition = stackTransition.neutral
-    if (previousStackSize === 0) {
-      transition = tryCastPrimitive<UsesCustomTransition>(newGenerator, typeof newGenerator)?.transition?.neutral ?? stackTransition.neutral
-    } else if (newStackSize === 0) {
-      transition = tryCastPrimitive<UsesCustomTransition>(currentGenerator, typeof currentGenerator)?.transition?.pop ?? stackTransition.pop
-    } else if (newStackSize > previousStackSize) {
-      transition = tryCastPrimitive<UsesCustomTransition>(newGenerator, typeof newGenerator)?.transition?.push ?? stackTransition.push
-    } else if (newStackSize < previousStackSize) {
-      transition = tryCastPrimitive<UsesCustomTransition>(newGenerator, typeof newGenerator)?.transition?.pop ?? stackTransition.pop
-    } else {
-      transition = tryCastPrimitive<UsesCustomTransition>(newGenerator, typeof newGenerator)?.transition?.neutral ?? stackTransition.neutral
-    }
-    swapViewSwap(parent, currentView, nextView, transition)
-    currentView = nextView
-    currentGenerator = newGenerator
-    previousStackSize = newStackSize
-  })
+      let transition = stackTransition.neutral
+      if (previousStackSize === 0) {
+        transition = tryCastPrimitive<UsesCustomTransition>(newGenerator, typeof newGenerator)?.transition?.neutral ?? stackTransition.neutral
+      } else if (newStackSize === 0) {
+        transition = tryCastPrimitive<UsesCustomTransition>(currentGenerator, typeof currentGenerator)?.transition?.pop ?? stackTransition.pop
+      } else if (newStackSize > previousStackSize) {
+        transition = tryCastPrimitive<UsesCustomTransition>(newGenerator, typeof newGenerator)?.transition?.push ?? stackTransition.push
+      } else if (newStackSize < previousStackSize) {
+        transition = tryCastPrimitive<UsesCustomTransition>(newGenerator, typeof newGenerator)?.transition?.pop ?? stackTransition.pop
+      } else {
+        transition = tryCastPrimitive<UsesCustomTransition>(newGenerator, typeof newGenerator)?.transition?.neutral ?? stackTransition.neutral
+      }
+      swapViewSwap(parent, currentView, nextView, transition)
+      currentView = nextView
+      currentGenerator = newGenerator
+      previousStackSize = newStackSize
+    })
+  )
 }
 
 export function replaceWithStyles(oldElement: HTMLElement, newElement: HTMLElement) {
