@@ -294,27 +294,12 @@ function modify<T>(modifier: (item: T)=>T): UnaryFunction<HasValueSubject<T>, vo
     }
 }
 
-function test() {
-    new BehaviorSubject<number | null>(2).pipe(filter((x): x is number => typeof x === "number")).subscribe(x => console.log(x + 1))
-    function takesSubject(subj: Subject<number>){}
-    takesSubject(new BehaviorSubject<number>(2).pipe(mapSubject(x => x + 1, x => x - 1)))
-    const sub = of(2, 3)
-    // of(1, 2, 3).pipe(combineLatestWith(sub), map)
-
-    function checkPasses2(obs: Observable<boolean>){}
-    checkPasses2(of(new Set([1, 2, 3])).pipe(call("has", of(2))))
-    checkPasses2(of(1).pipe(combineLatestWith(of(2)), mapCall(safeEq)))
-    // checkPasses2(of(1).pipe(combineLatestWith(of(2)), map(tuplize(safeEq))))
-    // of(new Set([1, 2, 3])).pipe(combineLatestWith(of(2)), mapCall("has"))
-    // of(2).pipe(combineLatestWith(of(new Set([1, 2, 3]))), mapCall("has"))
-
-    new BehaviorSubject(22).pipe(mapReversible(plusNumber(1)))
-    new BehaviorSubject(22).pipe(intToString)
-    new BehaviorSubject(22).pipe(mergeMap(x => of(1, 2, 3)))
-    new BehaviorSubject(22).pipe(mergeMap(x => of(1, 2, 3)))
-
-    of(true).pipe(combineLatestWith(of(false)), mapCall(or))
-
-    combineLatest([of(1), of(2)])
-
+export function doOnSubscribe<T>(onSubscribe: (subscription: SubscriptionLike) => void): (source: Observable<T>) =>  Observable<T> {
+    return (source) => {
+        return new Observable<T>(subscriber => {
+            const basis = source.subscribe(subscriber)
+            onSubscribe(basis)
+            return basis
+        })
+    }
 }
