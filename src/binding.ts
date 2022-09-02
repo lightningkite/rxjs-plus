@@ -8,7 +8,7 @@ import {
     Subscription, switchMap, take, throttleTime,
     Unsubscribable
 } from 'rxjs'
-import { plusNumber } from "./operatorReferenceShorthand";
+import {not, plusNumber, ReversibleFunction} from "./operatorReferenceShorthand";
 import {
     DisposableLambda,
     intToString,
@@ -19,13 +19,26 @@ import {
     withWrite
 } from "./plus";
 import { tap } from "rxjs/operators";
-import { elementEnabled } from "./android";
 import { TransitionTriple } from "./transitions"
 
 export interface VirtualProperty<RECEIVER, T> {
     get(receiver: RECEIVER): T
 
     set(receiver: RECEIVER, value: T): any
+}
+
+export function reverse<RECEIVER, T>(property: VirtualProperty<RECEIVER, T> | DataClassProperty<RECEIVER, T>, op: ReversibleFunction<T, T>): VirtualProperty<RECEIVER, T> {
+    if(typeof property === "string") {
+        return {
+            get(r) { return op(r[property] as any as T) },
+            set(r, value) { (r as any)[property] = op.reverse()(value) }
+        }
+    } else {
+        return {
+            get(r) { return op(property.get(r)) },
+            set(r, value) { property.set(r, op.reverse()(value)) }
+        }
+    }
 }
 
 export function hasClass(className: string): VirtualProperty<HTMLElement, boolean> {
@@ -99,7 +112,13 @@ export type VirtualPropertyKeyOrAction<OWNER extends HTMLElement, VALUE> =
     | ((e: OWNER, v: VALUE) => void)
     | DataClassProperty<OWNER, VALUE>
 
-export function subscribeAutoDispose<OWNER extends HTMLElement, VALUE>(owner: OWNER, key: VirtualPropertyKeyOrAction<OWNER, VALUE>): (<O extends Observable<VALUE>>(obs: O) => O) {
+export function subscribeAutoDispose<OWNER extends HTMLElement, VALUE>(owner: OWNER, key?: VirtualPropertyKeyOrAction<OWNER, VALUE>): (<O extends Observable<VALUE>>(obs: O) => O) {
+    if(key === undefined) {
+        return property => {
+            elementRemoved(owner).parts.push(property.subscribe())
+            return property
+        }
+    }
     switch (typeof key) {
         case "string":
             return property => {
@@ -505,11 +524,6 @@ function _chain(pathParts: Array<PathPartMid<any, any>>, last: PathPartEnding<an
 export function select<K extends keyof HTMLElementTagNameMap>(tagName: K): (element: HTMLElement) => HTMLElementTagNameMap[K] {
     // return (element) => element.querySelector
     return (element) => (element.tagName === tagName) ? (element as HTMLElementTagNameMap[K]) : element.getElementsByTagName(tagName)[0]
-}
-
-function test(value: Observable<string>, view: HTMLElement & { input: HTMLInputElement }) {
-    value.pipe(subscribeAutoDispose(view, chain("style", "backgroundColor")))
-    value.pipe(map(x => x === "hi"), subscribeAutoDispose(view, chain("input", elementEnabled)))
 }
 
 export function buttonDate(type: HTMLInputElement["type"]): VirtualProperty<HTMLElement, Date> & { getInput(receiver: HTMLElement): HTMLInputElement }

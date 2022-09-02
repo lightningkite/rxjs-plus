@@ -23,10 +23,12 @@ export const unsuccessfulAsError: MonoTypeOperatorFunction<Response> = map(value
 
 export class HttpResponseException extends Error {
     public readonly response: Response;
+    public readonly cause?: Error;
 
-    public constructor(response: Response) {
+    public constructor(response: Response, cause?: Error) {
         super(`Got code ${response.status}`);
         this.response = response;
+        this.cause = cause
     }
 }
 
