@@ -371,7 +371,7 @@ export function makeDatalistForElement(element: HTMLElement): HTMLDataListElemen
 export function showInPager<T>(
     element: HTMLElement & { previous: HTMLElement, next: HTMLElement, container: HTMLElement },
     selectedIndex: Subject<number> = new BehaviorSubject(0),
-    makeView: (t: T) => HTMLElement
+    makeView: (t: Observable<T>) => HTMLElement
 ): MonoTypeOperatorFunction<Array<T>> {
     let pastIndex = 0
     let current: HTMLElement | null = null
@@ -380,7 +380,7 @@ export function showInPager<T>(
         obsWithIndex.pipe(
             map(([list, index]) => [list[index], index] as [T, number]),
             subscribeAutoDispose(element, (container, [value, index]) => {
-                const newView = makeView(value)
+                const newView = makeView(of(value))
                 swapViewSwap(
                     container.container,
                     current,
