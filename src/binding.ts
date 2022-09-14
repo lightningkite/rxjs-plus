@@ -445,9 +445,14 @@ export const viewExists: VirtualProperty<HTMLElement, boolean> = {
         return !receiver.hidden
     },
     set(receiver: HTMLElement, value: boolean): any {
+        let originalDisplayValue: string | undefined = receiver.style.display
+        if(originalDisplayValue == "none") originalDisplayValue = undefined
         receiver.hidden = !value
         if (value) {
-            receiver.style.removeProperty("display")
+            if(originalDisplayValue)
+                receiver.style.display = originalDisplayValue
+            else
+                receiver.style.removeProperty("display")
         } else {
             receiver.style.display = "none"
         }
