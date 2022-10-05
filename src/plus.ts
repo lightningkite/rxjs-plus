@@ -18,7 +18,7 @@ import {
     ObservedValueOf,
     ObservableInput,
     switchMap,
-    MonoTypeOperatorFunction, finalize, defer, SubscriptionLike
+    MonoTypeOperatorFunction, finalize, defer, SubscriptionLike, NEVER, EMPTY
 } from "rxjs";
 import {
     not,
@@ -123,8 +123,8 @@ export function mapSubjectWithExisting<T, R>(project: (value: T) => R, unproject
 
 export function withWrite<T>(write: (value: T) => void): UnaryFunction<Observable<T>, Subject<T>> {
     return obs => new AnonymousSubject<T>({
-        complete(): void {},
-        error(err: any): void {},
+        complete(): void { },
+        error(err: any): void { },
         next: write
     }, obs)
 }
@@ -154,7 +154,7 @@ export function safeEq(first: any, second: any): boolean {
 }
 
 export function subjectIsEqualTo<T>(other: T): UnaryFunction<Subject<T>, Subject<boolean>> {
-    return obs => obs.pipe(map(x => x == other), withWrite(x => { if(x) obs.next(other) }))
+    return obs => obs.pipe(map(x => x == other), withWrite(x => { if (x) obs.next(other) }))
 }
 export function subjectIsNotEqualTo<T>(other: T): UnaryFunction<Subject<T>, Subject<boolean>> {
     return obs => obs.pipe(subjectIsEqualTo(other), mapReversible(not))
@@ -177,7 +177,7 @@ export function subjectProperty<T, K extends keyof T>(key: K): UnaryFunction<Has
 
 export function contains<T>(value: T): UnaryFunction<HasValueSubject<Set<T>>, Subject<boolean>> {
     return obs => obs.pipe(map(x => x.has(value)), withWrite(x => {
-        if(x) {
+        if (x) {
             obs.value.delete(value)
             return obs.value
         } else {
@@ -186,7 +186,7 @@ export function contains<T>(value: T): UnaryFunction<HasValueSubject<Set<T>>, Su
         }
     }))
 }
-export function floatToString(obs: Subject<number>):Subject<string> {
+export function floatToString(obs: Subject<number>): Subject<string> {
     return obs.pipe(mapSubjectMaybeWrite(
         x => `${x}`,
         x => {
@@ -195,7 +195,7 @@ export function floatToString(obs: Subject<number>):Subject<string> {
         }
     ))
 }
-export function intToString(obs: Subject<number>):Subject<string> {
+export function intToString(obs: Subject<number>): Subject<string> {
     return obs.pipe(mapSubjectMaybeWrite(
         x => `${x}`,
         x => {
@@ -204,7 +204,7 @@ export function intToString(obs: Subject<number>):Subject<string> {
         }
     ))
 }
-export function floatToStringNullable(obs: Subject<number | null>):Subject<string> {
+export function floatToStringNullable(obs: Subject<number | null>): Subject<string> {
     return obs.pipe(mapSubject(
         x => `${x ?? ''}`,
         x => {
@@ -213,7 +213,7 @@ export function floatToStringNullable(obs: Subject<number | null>):Subject<strin
         }
     ))
 }
-export function intToStringNullable(obs: Subject<number | null>):Subject<string> {
+export function intToStringNullable(obs: Subject<number | null>): Subject<string> {
     return obs.pipe(mapSubject(
         x => `${x ?? ''}`,
         x => {
@@ -226,9 +226,9 @@ export function intToStringNullable(obs: Subject<number | null>):Subject<string>
 export function call<
     Receiver,
     FuncName extends keyof Receiver,
-    Func extends Receiver[FuncName] & ((... x: Array<any>) => ReturnType),
+    Func extends Receiver[FuncName] & ((...x: Array<any>) => ReturnType),
     ReturnType
-    >(functionName: FuncName, ...args: Array<Observable<unknown>>): OperatorFunction<Receiver, ReturnType> {
+>(functionName: FuncName, ...args: Array<Observable<unknown>>): OperatorFunction<Receiver, ReturnType> {
     return pipe(combineLatestWith(...args), map(parts => ((parts[0] as Receiver)[functionName] as Func)(parts.slice(1))))
 }
 
@@ -238,7 +238,7 @@ export function call<
 
 export function mapCall<
     Func extends (...args: Array<any>) => any
-    >(func: Func): OperatorFunction<{ [Key in keyof Parameters<Func>]: Parameters<Func>[Key]}, ReturnType<Func>> {
+>(func: Func): OperatorFunction<{ [Key in keyof Parameters<Func>]: Parameters<Func>[Key] }, ReturnType<Func>> {
     return map(tuple => func(...tuple))
 }
 
@@ -253,7 +253,7 @@ export function mergeMapNotNull<T, O extends ObservableInput<any>>(
     concurrent?: number
 ): OperatorFunction<T | null, ObservedValueOf<O> | null> {
     return mergeMap((value, index) => {
-        if(value === null) return of(null)
+        if (value === null) return of(null)
         return project(value, index) ?? of(null)
     }, concurrent)
 }
@@ -262,8 +262,22 @@ export function switchMapNotNull<T, O extends ObservableInput<any>>(
     project: (value: T, index: number) => O | null
 ): OperatorFunction<T | null, ObservedValueOf<O> | null> {
     return switchMap((value, index) => {
-        if(value === null) return of(null)
+        if (value === null) return of(null)
         return project(value, index) ?? of(null)
+    })
+}
+
+export function filterIsPresent<T>(): MonoTypeOperatorFunction<T> {
+    return obs => defer(() => {
+        return obs.pipe(
+            switchMap((value:T): Observable<T> => {
+                if(value === null){
+                    return EMPTY
+                } else {
+                    return of(value)
+                }
+            })
+        )
     })
 }
 
@@ -276,25 +290,25 @@ export function setOnWhileActive<T>(observer: Observer<boolean>): MonoTypeOperat
 
 export class DisposableLambda implements SubscriptionLike {
     closed: boolean = false;
-    lambda: ()=>void;
-    constructor(lambda: ()=>void) {
+    lambda: () => void;
+    constructor(lambda: () => void) {
         this.lambda = lambda
     }
 
     unsubscribe(): void {
-        if(this.closed) { return }
+        if (this.closed) { return }
         this.closed = true;
         this.lambda();
     }
 }
 
-function modify<T>(modifier: (item: T)=>T): UnaryFunction<HasValueSubject<T>, void> {
+function modify<T>(modifier: (item: T) => T): UnaryFunction<HasValueSubject<T>, void> {
     return sub => {
         sub.next(modifier(sub.value))
     }
 }
 
-export function doOnSubscribe<T>(onSubscribe: (subscription: SubscriptionLike) => void): (source: Observable<T>) =>  Observable<T> {
+export function doOnSubscribe<T>(onSubscribe: (subscription: SubscriptionLike) => void): (source: Observable<T>) => Observable<T> {
     return (source) => {
         return new Observable<T>(subscriber => {
             const basis = source.subscribe(subscriber)
@@ -302,4 +316,29 @@ export function doOnSubscribe<T>(onSubscribe: (subscription: SubscriptionLike) =
             return basis
         })
     }
+}
+
+export function onlyWhile<T>(shouldListen: Observable<boolean>): MonoTypeOperatorFunction<T> {
+    return obs => defer(() => {
+        return shouldListen.pipe(
+            switchMap((it: boolean): Observable<T> => {
+                if (it) { return obs } else {
+                    return NEVER
+                }
+            })
+        )
+    })
+}
+
+
+export function onlyWhileDefault<T>(shouldListen: Observable<boolean>, downtimeValue: T): MonoTypeOperatorFunction<T> {
+    return obs => defer(() => {
+        return shouldListen.pipe(
+            switchMap((it: boolean): Observable<T> => {
+                if (it) { return obs } else {
+                    return of(downtimeValue)
+                }
+            })
+        )
+    })
 }

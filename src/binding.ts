@@ -541,17 +541,20 @@ export function buttonDate(type: HTMLInputElement["type"], defaultText?: string)
             const made = document.createElement("input")
             made.type = type
             receiver.appendChild(made)
+            made.onclick = ev => {
+                if(!made.valueAsDate) made.valueAsDate = new Date()
+            }
             return made
         },
         get(receiver: HTMLElement): Date | null {
             return this.getInput(receiver).valueAsDate
         },
         set(receiver: HTMLElement, value: Date | null): any {
-            if (value === null) {
-                receiver.innerText = defaultText ?? ""
-            } else {
+            // if (value === null) {
+            //     receiver.innerText = defaultText ?? ""
+            // } else {
                 this.getInput(receiver).valueAsDate = value
-            }
+            // }
         }
     }
 }
