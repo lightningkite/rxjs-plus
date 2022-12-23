@@ -298,7 +298,11 @@ export function showInTyped<T>(
 }
 
 
-export function showInSelect<T>(select: HTMLSelectElement, selected: Subject<T>, toString: (item: T) => string = x => `${x}`): MonoTypeOperatorFunction<Array<T>> {
+export function showInSelect<T>(
+    select: HTMLSelectElement, 
+    selected: Subject<T>, 
+    toString: (item: T) => string = x => `${x}`
+    ): MonoTypeOperatorFunction<Array<T>> {
     return obs => {
         let lastKnownArray: Array<T> = []
         obs.pipe(
@@ -328,7 +332,10 @@ export function showInSelect<T>(select: HTMLSelectElement, selected: Subject<T>,
     }
 }
 
-export function showInInput<T>(input: HTMLInputElement, selected: ((item: T) => void) | Observer<T>, toString: (item: T) => string = x => `${x}`): MonoTypeOperatorFunction<Array<T>> {
+export function showInInput<T>(
+    input: HTMLInputElement, 
+    selected: ((item: T) => void) | Observer<T>, 
+    toString: (item: T) => string = x => `${x}`): MonoTypeOperatorFunction<Array<T>> {
     return obs => {
         let lastKnownArray: Array<T> = []
         obs.pipe(
