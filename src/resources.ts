@@ -14,38 +14,48 @@ export type Video = VideoReference | VideoRemoteUrl
 export type VideoReference = { uri: File }
 export type VideoRemoteUrl = { url: string }
 
-export function imageElementSet(imageView: HTMLImageElement, image: Image | null) {
-    if (image === null) {
-        imageView.src = ""
-    } else if ('uri' in image) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const reader = e.target;
-            if (reader !== null) {
-                imageView.src = reader.result as string;
+function imageToUrl(image: Image | null): Promise<string> {
+    return new Promise((resolve, reject) => {
+        if (image === null) {
+            resolve("")
+        } else if ('uri' in image) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const reader = e.target;
+                if (reader !== null) {
+                    resolve(reader.result as string)
+                }
             }
+            reader.readAsDataURL(image.uri)
+        } else if ('bitmap' in image) {
+            let canvasElement = document.createElement("canvas");
+            canvasElement.width = image.bitmap.width;
+            canvasElement.height = image.bitmap.height;
+            const ctx = canvasElement.getContext("2d");
+            if (ctx) {
+                ctx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+                ctx.drawImage(image.bitmap, 0, 0);
+            }
+            canvasElement.toBlob((blob) => {
+                if (blob === null) return
+                resolve(URL.createObjectURL(blob))
+            })
+        } else if ('raw' in image) {
+            resolve(URL.createObjectURL(new Blob([image.raw])))
+        } else if ('url' in image) {
+            resolve(image.url)
+        } else if ('name' in image) {
+            resolve(image.file ?? ("drawables/" + image.name))
         }
-        reader.readAsDataURL(image.uri)
-    } else if ('bitmap' in image) {
-        let canvasElement = document.createElement("canvas");
-        canvasElement.width = image.bitmap.width;
-        canvasElement.height = image.bitmap.height;
-        const ctx = canvasElement.getContext("2d");
-        if (ctx) {
-            ctx.clearRect(0, 0, canvasElement.width, canvasElement.height);
-            ctx.drawImage(image.bitmap, 0, 0);
-        }
-        canvasElement.toBlob((blob) => {
-            if (blob === null) return
-            imageView.src = URL.createObjectURL(blob);
-        })
-    } else if ('raw' in image) {
-        imageView.src = URL.createObjectURL(new Blob([image.raw]))
-    } else if ('url' in image) {
-        imageView.src = image.url
-    } else if ('name' in image) {
-        imageView.src = image.file ?? ("drawables/" + image.name)
-    }
+    })
+}
+export function imageElementSet(imageView: HTMLImageElement, image: Image | null) {
+    imageToUrl(image).then(x => imageView.src = x)
+}
+export function imageElementSetMultiple(imageView: HTMLImageElement, images: Array<Image>) {
+    const image = images.length > 1 ? images[0] : null
+    //TODO - Use faster load images
+    imageElementSet(imageView, images[images.length - 1] ?? null)
 }
 
 export function imageToBitmap(image: Image): Observable<ImageBitmap> {
