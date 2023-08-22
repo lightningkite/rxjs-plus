@@ -46,6 +46,8 @@
     "tsconfig.json",
     "jsx-runtime.js",
     "jsx-runtime.d.ts",
+    "fcm.d.ts",
+    "fcm.js",
     "index.js",
     "index.d.ts",
     "index.scss",
